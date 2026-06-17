@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login | AquaControl Pro</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+  <script src="/js/theme.js"></script>
+  <link rel="stylesheet" href="/css/app.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Material+Symbols+Outlined&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      background: radial-gradient(circle at 20% 20%, #dce9ff 0%, #f8f9ff 50%, #cbdbf5 100%);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4 text-on-surface">
+  <div class="glass-card w-full max-w-md rounded-2xl p-8 shadow-lg">
+    <div class="flex flex-col items-center mb-8">
+      <div class="w-14 h-14 bg-primary text-on-primary rounded-2xl flex items-center justify-center mb-4">
+        <span class="material-symbols-outlined text-3xl">water_drop</span>
+      </div>
+      <h1 class="text-headline-lg font-bold text-primary">AquaControl Pro</h1>
+      <p class="text-label-sm text-on-surface-variant">IoT Greenhouse</p>
+    </div>
+
+    <form id="login-form" class="space-y-5">
+      <div>
+        <label class="text-label-sm font-semibold text-on-surface-variant uppercase">Username</label>
+        <input id="username" name="username" type="text" required autocomplete="username"
+          class="mt-1 w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-2.5 text-body-md focus:ring-2 focus:ring-primary focus:border-primary outline-none"
+          placeholder="admin" />
+      </div>
+      <div>
+        <label class="text-label-sm font-semibold text-on-surface-variant uppercase">Password</label>
+        <input id="password" name="password" type="password" required autocomplete="current-password"
+          class="mt-1 w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-2.5 text-body-md focus:ring-2 focus:ring-primary focus:border-primary outline-none"
+          placeholder="••••••••" />
+      </div>
+
+      <p id="error-msg" class="hidden text-error text-label-sm font-semibold"></p>
+
+      <button type="submit" id="submit-btn"
+        class="w-full bg-primary text-on-primary rounded-lg py-3 font-bold hover:opacity-90 transition-opacity disabled:opacity-50">
+        Sign in
+      </button>
+    </form>
+
+    <p class="text-center text-label-sm text-on-surface-variant mt-6">
+      © 2024 IoT Greenhouse
+    </p>
+  </div>
+
+  <script>
+    const form = document.getElementById('login-form');
+    const errEl = document.getElementById('error-msg');
+    const btn = document.getElementById('submit-btn');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errEl.classList.add('hidden');
+      btn.disabled = true;
+      btn.textContent = 'Signing in...';
+      try {
+        const res = await fetch('/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            username: document.getElementById('username').value,
+            password: document.getElementById('password').value,
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Login failed');
+        window.location.href = data.redirect || '/';
+      } catch (err) {
+        errEl.textContent = err.message;
+        errEl.classList.remove('hidden');
+        btn.disabled = false;
+        btn.textContent = 'Sign in';
+      }
+    });
+  </script>
+</body>
+</html>

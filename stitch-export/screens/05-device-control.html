@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AquaControl Pro - Device Control &amp; Sensors</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary": "#006e2f",
+                    "tertiary-container": "#00618b",
+                    "on-tertiary": "#ffffff",
+                    "surface-container-high": "#dce9ff",
+                    "tertiary-fixed-dim": "#89ceff",
+                    "on-secondary-fixed-variant": "#005321",
+                    "inverse-primary": "#b2c5ff",
+                    "inverse-surface": "#213145",
+                    "on-tertiary-container": "#a7d9ff",
+                    "surface": "#f8f9ff",
+                    "surface-tint": "#0c56d0",
+                    "surface-variant": "#d3e4fe",
+                    "on-secondary": "#ffffff",
+                    "on-secondary-container": "#007432",
+                    "secondary-fixed-dim": "#4ae176",
+                    "outline-variant": "#c3c6d6",
+                    "surface-container": "#e5eeff",
+                    "on-error": "#ffffff",
+                    "on-surface-variant": "#434654",
+                    "tertiary": "#004869",
+                    "surface-container-low": "#eff4ff",
+                    "secondary-fixed": "#6bff8f",
+                    "surface-container-lowest": "#ffffff",
+                    "primary-fixed-dim": "#b2c5ff",
+                    "primary-container": "#0052cc",
+                    "surface-bright": "#f8f9ff",
+                    "on-error-container": "#93000a",
+                    "on-tertiary-fixed-variant": "#004c6e",
+                    "on-primary-fixed": "#001848",
+                    "error": "#ba1a1a",
+                    "primary-fixed": "#dae2ff",
+                    "on-primary-fixed-variant": "#0040a2",
+                    "on-primary": "#ffffff",
+                    "background": "#f8f9ff",
+                    "on-primary-container": "#c4d2ff",
+                    "outline": "#737685",
+                    "on-background": "#0b1c30",
+                    "surface-dim": "#cbdbf5",
+                    "surface-container-highest": "#d3e4fe",
+                    "error-container": "#ffdad6",
+                    "on-tertiary-fixed": "#001e2f",
+                    "secondary-container": "#6bff8f",
+                    "inverse-on-surface": "#eaf1ff",
+                    "on-surface": "#0b1c30",
+                    "on-secondary-fixed": "#002109",
+                    "primary": "#003d9b",
+                    "tertiary-fixed": "#c9e6ff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "16px",
+                    "container-padding": "24px",
+                    "sidebar-width": "260px",
+                    "card-gap": "20px",
+                    "unit": "8px"
+            },
+            "fontFamily": {
+                    "title-md": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "code-xs": ["JetBrains Mono"],
+                    "headline-lg": ["Inter"],
+                    "body-md": ["Inter"]
+            },
+            "fontSize": {
+                    "title-md": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "code-xs": ["11px", {"lineHeight": "14px", "fontWeight": "400"}],
+                    "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+        
+        .active-nav-scale {
+            transition: transform 0.15s ease-in-out;
+        }
+        .active-nav-scale:active {
+            transform: scale(0.95);
+        }
+
+        .switch-input:checked + .switch-slider {
+            background-color: #006e2f;
+        }
+        .switch-input:checked + .switch-slider:before {
+            transform: translateX(20px);
+        }
+        .switch-slider:before {
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .chart-gradient {
+            background: linear-gradient(180deg, rgba(0, 61, 155, 0.1) 0%, rgba(0, 61, 155, 0) 100%);
+        }
+
+        @keyframes pulse-success {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .command-feedback {
+            animation: pulse-success 0.4s ease-out;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md selection:bg-primary-container selection:text-on-primary-container">
+<!-- SideNavBar Shell -->
+<aside class="h-screen w-[260px] fixed left-0 top-0 border-r border-white/20 flex flex-col p-4 gap-2 bg-white/70 backdrop-blur-xl shadow-sm z-50">
+<div class="flex flex-col gap-1 mb-6 px-2">
+<span class="text-title-md font-title-md font-bold text-primary">AquaControl Pro</span>
+<span class="text-label-sm font-label-sm text-outline">ESP32 Irrigation System</span>
+</div>
+<nav class="flex flex-col gap-1 flex-grow">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant/50 transition-colors rounded-lg active-nav-scale" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-sm">Overview</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant/50 transition-colors rounded-lg active-nav-scale" href="#">
+<span class="material-symbols-outlined" data-icon="sensors">sensors</span>
+<span class="font-label-sm">Sensors</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-primary-container text-on-primary-container rounded-lg font-semibold active-nav-scale" href="#">
+<span class="material-symbols-outlined" data-icon="toggle_on">toggle_on</span>
+<span class="font-label-sm">Control</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant/50 transition-colors rounded-lg active-nav-scale" href="#">
+<span class="material-symbols-outlined" data-icon="videocam">videocam</span>
+<span class="font-label-sm">Camera</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant/50 transition-colors rounded-lg active-nav-scale" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+<span class="font-label-sm">Logs</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-variant/50 transition-colors rounded-lg active-nav-scale" href="#">
+<span class="material-symbols-outlined" data-icon="settings_input_component">settings_input_component</span>
+<span class="font-label-sm">Configuration</span>
+</a>
+</nav>
+<div class="mt-auto flex flex-col gap-1 pt-4 border-t border-outline-variant/30">
+<div class="px-4 py-2 mb-2 bg-secondary-container/20 text-secondary text-label-sm rounded-full text-center font-bold">
+                System: Online
+            </div>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-variant/50 transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span class="font-label-sm">Support</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-variant/50 transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-sm">Settings</span>
+</a>
+</div>
+</aside>
+<!-- TopAppBar Shell -->
+<header class="fixed top-0 right-0 left-[260px] h-16 bg-white/70 backdrop-blur-xl shadow-sm z-40 flex items-center justify-between px-6">
+<h1 class="text-headline-lg font-headline-lg font-bold text-on-surface">Device Control &amp; Sensors</h1>
+<div class="flex items-center gap-4">
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-outline text-[20px]" data-icon="search">search</span>
+<input class="bg-surface-container-low border-none rounded-full py-2 pl-10 pr-4 text-body-md w-64 focus:ring-2 focus:ring-primary/20 outline-none" placeholder="Search sensors..." type="text"/>
+</div>
+<button class="relative p-2 text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-2 h-2 bg-error rounded-full border-2 border-white"></span>
+</button>
+<div class="flex items-center gap-3 pl-4 border-l border-outline-variant/50">
+<div class="text-right">
+<p class="text-label-sm font-bold text-on-surface">Admin</p>
+<p class="text-[10px] text-outline">System Manager</p>
+</div>
+<img alt="User avatar" class="w-10 h-10 rounded-full border-2 border-primary-container object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAq9eiAr0cVS5miCrdzWJEnn0LYJ_gQf2TEgTpBfuubdpysAg5zHSW_jcceMKLgCQ0ew3JnG_0IQcDtCnQ8YDy0pVulYUzv7N9mzymUCcznDpbUKEerdFhnjStyltzGhWIVVoOHCP_HCl85-CUhlwUon2l5clPdbAXpU9JhMftySv3PbcjUcEVw9D-x7uNYLslNO9R0konPaADdENgElPQWzGdfnA0swTqYMufUjPEMxr8sOr6b-VXytd6xsgMQBb-aVIboX9zcW6o"/>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-[260px] pt-24 px-8 pb-12 min-h-screen">
+<!-- Section 1: Detailed Sensor Grid -->
+<div class="mb-10">
+<div class="flex items-center justify-between mb-6">
+<div>
+<h2 class="text-title-md font-title-md text-on-surface">Sensor Status by Zone</h2>
+<p class="text-body-md text-on-surface-variant">Real-time data from 3 main cultivation zones</p>
+</div>
+<div class="flex gap-2">
+<button class="px-4 py-2 bg-white border border-outline-variant rounded-lg text-label-sm font-bold flex items-center gap-2 hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="filter_list">filter_list</span> Filter
+                    </button>
+<button class="px-4 py-2 bg-primary text-on-primary rounded-lg text-label-sm font-bold flex items-center gap-2 hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-[18px]" data-icon="download">download</span> Export Report
+                    </button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Zone 1 -->
+<div class="glass-card rounded-xl p-5 flex flex-col gap-4">
+<div class="flex justify-between items-start">
+<div>
+<span class="px-2 py-1 bg-primary-container/10 text-primary text-[10px] font-bold rounded uppercase tracking-wider">Zone 01</span>
+<h3 class="text-title-md font-bold mt-1">Fruit Orchard</h3>
+</div>
+<span class="material-symbols-outlined text-primary" data-icon="potted_plant">potted_plant</span>
+</div>
+<div class="grid grid-cols-2 gap-4 my-2">
+<div class="flex flex-col">
+<span class="text-label-sm text-outline">Soil Moisture</span>
+<span class="text-headline-lg font-bold text-on-surface">64%</span>
+</div>
+<div class="flex flex-col">
+<span class="text-label-sm text-outline">Temperature</span>
+<span class="text-headline-lg font-bold text-on-surface">28°C</span>
+</div>
+</div>
+<div class="h-16 w-full chart-gradient relative overflow-hidden rounded-lg">
+<svg class="absolute inset-0 w-full h-full" preserveaspectratio="none" viewbox="0 0 100 100">
+<path d="M0 80 Q 25 70, 50 75 T 100 60 L 100 100 L 0 100 Z" fill="rgba(12, 86, 208, 0.1)"></path>
+<path d="M0 80 Q 25 70, 50 75 T 100 60" fill="none" stroke="#0c56d0" stroke-width="2"></path>
+</svg>
+<span class="absolute top-2 right-2 text-code-xs text-primary font-bold">24h Trend</span>
+</div>
+</div>
+<!-- Zone 2 -->
+<div class="glass-card rounded-xl p-5 flex flex-col gap-4">
+<div class="flex justify-between items-start">
+<div>
+<span class="px-2 py-1 bg-secondary-container/10 text-secondary text-[10px] font-bold rounded uppercase tracking-wider">Zone 02</span>
+<h3 class="text-title-md font-bold mt-1">Greenhouse 01</h3>
+</div>
+<span class="material-symbols-outlined text-secondary" data-icon="grid_view">grid_view</span>
+</div>
+<div class="grid grid-cols-2 gap-4 my-2">
+<div class="flex flex-col">
+<span class="text-label-sm text-outline">Soil Moisture</span>
+<span class="text-headline-lg font-bold text-on-surface">42%</span>
+</div>
+<div class="flex flex-col">
+<span class="text-label-sm text-outline">Temperature</span>
+<span class="text-headline-lg font-bold text-on-surface">31°C</span>
+</div>
+</div>
+<div class="h-16 w-full chart-gradient relative overflow-hidden rounded-lg">
+<svg class="absolute inset-0 w-full h-full" preserveaspectratio="none" viewbox="0 0 100 100">
+<path d="M0 60 Q 20 50, 40 80 T 100 70 L 100 100 L 0 100 Z" fill="rgba(12, 86, 208, 0.1)"></path>
+<path d="M0 60 Q 20 50, 40 80 T 100 70" fill="none" stroke="#0c56d0" stroke-width="2"></path>
+</svg>
+<span class="absolute top-2 right-2 text-code-xs text-primary font-bold">24h Trend</span>
+</div>
+</div>
+<!-- Zone 3 -->
+<div class="glass-card rounded-xl p-5 flex flex-col gap-4">
+<div class="flex justify-between items-start">
+<div>
+<span class="px-2 py-1 bg-tertiary-fixed/30 text-tertiary text-[10px] font-bold rounded uppercase tracking-wider">Zone 03</span>
+<h3 class="text-title-md font-bold mt-1">Nursery</h3>
+</div>
+<span class="material-symbols-outlined text-tertiary" data-icon="eco">eco</span>
+</div>
+<div class="grid grid-cols-2 gap-4 my-2">
+<div class="flex flex-col">
+<span class="text-label-sm text-outline">Soil Moisture</span>
+<span class="text-headline-lg font-bold text-on-surface">78%</span>
+</div>
+<div class="flex flex-col">
+<span class="text-label-sm text-outline">Temperature</span>
+<span class="text-headline-lg font-bold text-on-surface">26°C</span>
+</div>
+</div>
+<div class="h-16 w-full chart-gradient relative overflow-hidden rounded-lg">
+<svg class="absolute inset-0 w-full h-full" preserveaspectratio="none" viewbox="0 0 100 100">
+<path d="M0 50 Q 30 40, 60 55 T 100 45 L 100 100 L 0 100 Z" fill="rgba(12, 86, 208, 0.1)"></path>
+<path d="M0 50 Q 30 40, 60 55 T 100 45" fill="none" stroke="#0c56d0" stroke-width="2"></path>
+</svg>
+<span class="absolute top-2 right-2 text-code-xs text-primary font-bold">24h Trend</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Section 2: Interactive Control Panel & Section 3: Logs -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Controls Panel -->
+<div class="lg:col-span-3">
+<div class="mb-6">
+<h2 class="text-title-md font-title-md text-on-surface">Device Control Panel</h2>
+<p class="text-body-md text-on-surface-variant">Direct interaction with ESP32 hardware</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<!-- Control Card: Pump 1 -->
+<div class="glass-card rounded-2xl p-6 flex items-center justify-between group hover:shadow-md transition-shadow" id="card-pump-1">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center text-primary transition-colors group-[.active]:bg-secondary/10 group-[.active]:text-secondary" id="icon-pump-1">
+<span class="material-symbols-outlined">water_drop</span>
+</div>
+<div>
+<h4 class="font-bold text-on-surface">Pump 1</h4>
+<span class="text-label-sm text-outline status-label" data-target="pump-1">Off</span>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer switch-input" onchange="toggleDevice('pump-1', this)" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest rounded-full peer-focus:ring-2 peer-focus:ring-primary/20 switch-slider before:content-[''] before:absolute before:top-[2px] before:left-[2px] before:bg-white before:rounded-full before:h-5 before:w-5"></div>
+</label>
+</div>
+<!-- Control Card: Pump 2 -->
+<div class="glass-card rounded-2xl p-6 flex items-center justify-between group hover:shadow-md transition-shadow" id="card-pump-2">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center text-primary" id="icon-pump-2">
+<span class="material-symbols-outlined">water_drop</span>
+</div>
+<div>
+<h4 class="font-bold text-on-surface">Pump 2</h4>
+<span class="text-label-sm text-outline status-label" data-target="pump-2">Off</span>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer switch-input" onchange="toggleDevice('pump-2', this)" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest rounded-full peer-focus:ring-2 peer-focus:ring-primary/20 switch-slider before:content-[''] before:absolute before:top-[2px] before:left-[2px] before:bg-white before:rounded-full before:h-5 before:w-5"></div>
+</label>
+</div>
+<!-- Control Card: Pump 3 -->
+<div class="glass-card rounded-2xl p-6 flex items-center justify-between group hover:shadow-md transition-shadow" id="card-pump-3">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center text-primary" id="icon-pump-3">
+<span class="material-symbols-outlined">water_drop</span>
+</div>
+<div>
+<h4 class="font-bold text-on-surface">Pump 3</h4>
+<span class="text-label-sm text-outline status-label" data-target="pump-3">Off</span>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer switch-input" onchange="toggleDevice('pump-3', this)" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest rounded-full peer-focus:ring-2 peer-focus:ring-primary/20 switch-slider before:content-[''] before:absolute before:top-[2px] before:left-[2px] before:bg-white before:rounded-full before:h-5 before:w-5"></div>
+</label>
+</div>
+<!-- Control Card: LED Strip -->
+<div class="glass-card rounded-2xl p-6 flex items-center justify-between group hover:shadow-md transition-shadow" id="card-led">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center text-primary" id="icon-led">
+<span class="material-symbols-outlined">light_mode</span>
+</div>
+<div>
+<h4 class="font-bold text-on-surface">LED Strip</h4>
+<span class="text-label-sm text-outline status-label" data-target="led">Off</span>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer switch-input" onchange="toggleDevice('led', this)" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-highest rounded-full peer-focus:ring-2 peer-focus:ring-primary/20 switch-slider before:content-[''] before:absolute before:top-[2px] before:left-[2px] before:bg-white before:rounded-full before:h-5 before:w-5"></div>
+</label>
+</div>
+</div>
+<!-- ESP32 Health Monitor -->
+<div class="mt-8 glass-card rounded-2xl p-6 border-dashed border-primary/30">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">memory</span>
+<h4 class="font-bold">ESP32 Status</h4>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-code-xs bg-primary-container/20 text-primary px-3 py-1 rounded-full">ID: ESP32-WROOM-01</span>
+<button class="px-3 py-1 bg-error/10 text-error rounded-full text-label-sm font-bold flex items-center gap-1 hover:bg-error/20 transition-colors">
+<span class="material-symbols-outlined text-[14px]">restart_alt</span> Reboot
+        </button>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-4">
+<div class="flex flex-col gap-1">
+<span class="text-label-sm text-outline">Signal Strength</span>
+<div class="flex items-center gap-2">
+<div class="flex-grow bg-surface-container rounded-full h-1.5">
+<div class="bg-secondary w-4/5 h-full rounded-full"></div>
+</div>
+<span class="text-label-sm font-bold">-62 dBm</span>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<span class="text-label-sm text-outline">Uptime</span>
+<span class="text-label-sm font-bold">12 days, 04:22:15</span>
+</div>
+<div class="flex flex-col gap-1">
+<span class="text-label-sm text-outline">Free Memory</span>
+<span class="text-label-sm font-bold">182 KB (Stack OK)</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Logs Sidebar -->
+<div class="lg:col-span-3 mt-8">
+<div class="flex items-center justify-between mb-6">
+<div>
+<h2 class="text-title-md font-title-md text-on-surface">Detailed Sensor Data</h2>
+<p class="text-body-md text-on-surface-variant">Detailed measurement history from end devices</p>
+</div>
+<button class="px-4 py-2 bg-primary text-on-primary rounded-lg text-label-sm font-bold flex items-center gap-2 hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-[18px]">download</span> Export Report
+    </button>
+</div>
+<div class="glass-card rounded-2xl overflow-hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant/30">
+<th class="px-6 py-4 text-label-sm font-bold text-outline uppercase tracking-wider">Time</th>
+<th class="px-6 py-4 text-label-sm font-bold text-outline uppercase tracking-wider">Zone</th>
+<th class="px-6 py-4 text-label-sm font-bold text-outline uppercase tracking-wider">Sensor Type</th>
+<th class="px-6 py-4 text-label-sm font-bold text-outline uppercase tracking-wider">Value</th>
+<th class="px-6 py-4 text-label-sm font-bold text-outline uppercase tracking-wider">Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/20">
+<tr class="hover:bg-surface-container/30 transition-colors">
+<td class="px-6 py-4 text-body-md">08:45:12</td>
+<td class="px-6 py-4 text-body-md font-semibold">Zone 01</td>
+<td class="px-6 py-4 text-body-md">Soil Moisture</td>
+<td class="px-6 py-4 text-body-md font-bold text-primary">64%</td>
+<td class="px-6 py-4"><span class="px-2 py-1 bg-secondary/10 text-secondary text-[10px] font-bold rounded uppercase">Stable</span></td>
+</tr>
+<tr class="hover:bg-surface-container/30 transition-colors">
+<td class="px-6 py-4 text-body-md">08:44:05</td>
+<td class="px-6 py-4 text-body-md font-semibold">Zone 02</td>
+<td class="px-6 py-4 text-body-md">Temperature</td>
+<td class="px-6 py-4 text-body-md font-bold text-primary">31°C</td>
+<td class="px-6 py-4"><span class="px-2 py-1 bg-secondary/10 text-secondary text-[10px] font-bold rounded uppercase">Stable</span></td>
+</tr>
+<tr class="hover:bg-surface-container/30 transition-colors">
+<td class="px-6 py-4 text-body-md">08:42:30</td>
+<td class="px-6 py-4 text-body-md font-semibold">Zone 03</td>
+<td class="px-6 py-4 text-body-md">Soil Moisture</td>
+<td class="px-6 py-4 text-body-md font-bold text-error">78%</td>
+<td class="px-6 py-4"><span class="px-2 py-1 bg-error/10 text-error text-[10px] font-bold rounded uppercase">Warning</span></td>
+</tr>
+<tr class="hover:bg-surface-container/30 transition-colors">
+<td class="px-6 py-4 text-body-md">08:40:15</td>
+<td class="px-6 py-4 text-body-md font-semibold">Zone 01</td>
+<td class="px-6 py-4 text-body-md">Temperature</td>
+<td class="px-6 py-4 text-body-md font-bold text-primary">28°C</td>
+<td class="px-6 py-4"><span class="px-2 py-1 bg-secondary/10 text-secondary text-[10px] font-bold rounded uppercase">Stable</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer Shell -->
+<footer class="w-full py-4 px-8 mt-auto border-t border-outline-variant/30 flex justify-between items-center ml-[260px] text-secondary">
+<div class="text-body-md">
+            © 2024 ESP32 Smart Irrigation System - System Status: <span class="font-bold text-secondary">Online</span>
+</div>
+<div class="flex gap-6">
+<a class="text-on-surface-variant hover:text-primary transition-colors text-label-sm" href="#">Privacy Policy</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors text-label-sm" href="#">Terms of Service</a>
+</div>
+</footer>
+<script>
+        function toggleDevice(deviceId, checkbox) {
+            const statusLabel = document.querySelector(`.status-label[data-target="${deviceId}"]`);
+            const card = document.getElementById(`card-${deviceId}`);
+            const icon = document.getElementById(`icon-${deviceId}`);
+            const now = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+
+            card.classList.add('command-feedback');
+            setTimeout(() => card.classList.remove('command-feedback'), 400);
+
+            const deviceNames = {
+                'pump-1': 'Pump 1',
+                'pump-2': 'Pump 2',
+                'pump-3': 'Pump 3',
+                'led': 'LED Strip'
+            };
+
+            if (checkbox.checked) {
+                statusLabel.innerText = "Running";
+                statusLabel.classList.remove('text-outline');
+                statusLabel.classList.add('text-secondary', 'font-bold');
+                icon.classList.remove('bg-surface-container', 'text-primary');
+                icon.classList.add('bg-secondary/10', 'text-secondary');
+            } else {
+                statusLabel.innerText = "Off";
+                statusLabel.classList.remove('text-secondary', 'font-bold');
+                statusLabel.classList.add('text-outline');
+                icon.classList.remove('bg-secondary/10', 'text-secondary');
+                icon.classList.add('bg-surface-container', 'text-primary');
+            }
+        }
+    </script>
+</body></html>

@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary": "#006e2f",
+                    "tertiary-container": "#00618b",
+                    "on-tertiary": "#ffffff",
+                    "surface-container-high": "#dce9ff",
+                    "tertiary-fixed-dim": "#89ceff",
+                    "on-secondary-fixed-variant": "#005321",
+                    "inverse-primary": "#b2c5ff",
+                    "inverse-surface": "#213145",
+                    "on-tertiary-container": "#a7d9ff",
+                    "surface": "#f8f9ff",
+                    "surface-tint": "#0c56d0",
+                    "surface-variant": "#d3e4fe",
+                    "on-secondary": "#ffffff",
+                    "on-secondary-container": "#007432",
+                    "secondary-fixed-dim": "#4ae176",
+                    "outline-variant": "#c3c6d6",
+                    "surface-container": "#e5eeff",
+                    "on-error": "#ffffff",
+                    "on-surface-variant": "#434654",
+                    "tertiary": "#004869",
+                    "surface-container-low": "#eff4ff",
+                    "secondary-fixed": "#6bff8f",
+                    "surface-container-lowest": "#ffffff",
+                    "primary-fixed-dim": "#b2c5ff",
+                    "primary-container": "#0052cc",
+                    "surface-bright": "#f8f9ff",
+                    "on-error-container": "#93000a",
+                    "on-tertiary-fixed-variant": "#004c6e",
+                    "on-primary-fixed": "#001848",
+                    "error": "#ba1a1a",
+                    "primary-fixed": "#dae2ff",
+                    "on-primary-fixed-variant": "#0040a2",
+                    "on-primary": "#ffffff",
+                    "background": "#f8f9ff",
+                    "on-primary-container": "#c4d2ff",
+                    "outline": "#737685",
+                    "on-background": "#0b1c30",
+                    "surface-dim": "#cbdbf5",
+                    "surface-container-highest": "#d3e4fe",
+                    "error-container": "#ffdad6",
+                    "on-tertiary-fixed": "#001e2f",
+                    "secondary-container": "#6bff8f",
+                    "inverse-on-surface": "#eaf1ff",
+                    "on-surface": "#0b1c30",
+                    "on-secondary-fixed": "#002109",
+                    "primary": "#003d9b",
+                    "tertiary-fixed": "#c9e6ff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "16px",
+                    "container-padding": "24px",
+                    "sidebar-width": "260px",
+                    "card-gap": "20px",
+                    "unit": "8px"
+            },
+            "fontFamily": {
+                    "title-md": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "code-xs": ["JetBrains Mono"],
+                    "headline-lg-mobile": ["Inter"],
+                    "display-lg": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "body-md": ["Inter"]
+            },
+            "fontSize": {
+                    "title-md": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "code-xs": ["11px", {"lineHeight": "14px", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "display-lg": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .custom-range::-webkit-slider-thumb {
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #003d9b;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.1s ease-in-out;
+        }
+        .custom-range::-webkit-slider-thumb:active {
+            scale: 0.9;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md selection:bg-primary-container selection:text-on-primary-container">
+<!-- SideNavBar -->
+<aside class="h-screen w-[260px] fixed left-0 top-0 border-r border-white/20 bg-white/70 dark:bg-inverse-surface/70 backdrop-blur-xl flex flex-col p-4 gap-2 z-50">
+<div class="mb-8 px-2">
+<h1 class="text-title-md font-title-md font-bold text-primary">AquaControl Pro</h1>
+<p class="text-label-sm font-label-sm text-on-surface-variant">ESP32 Irrigation System</p>
+</div>
+<nav class="flex-1 flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-variant/50 transition-colors rounded-lg group" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-body-md">Overview</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-variant/50 transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">sensors</span>
+<span class="text-body-md">Sensors</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-variant/50 transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">toggle_on</span>
+<span class="text-body-md">Controls</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-variant/50 transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">videocam</span>
+<span class="text-body-md">Camera</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-variant/50 transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">history</span>
+<span class="text-body-md">Logs</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 bg-primary-container text-on-primary-container rounded-lg font-semibold active:scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined">settings_input_component</span>
+<span class="text-body-md">Configuration</span>
+</a>
+</nav>
+<div class="mt-auto border-t border-outline-variant/30 pt-4 flex flex-col gap-1">
+<div class="px-3 py-2 mb-2 bg-secondary-container/20 rounded-lg">
+<p class="text-label-sm font-label-sm text-on-secondary-container flex items-center gap-2">
+<span class="w-2 h-2 bg-secondary rounded-full animate-pulse"></span>
+                System: Online
+            </p>
+</div>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-variant/50 transition-colors" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="text-body-md">Support</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-variant/50 transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-body-md">Settings</span>
+</a>
+</div>
+</aside>
+<!-- TopAppBar -->
+<header class="fixed top-0 right-0 left-[260px] h-16 bg-white/70 backdrop-blur-xl shadow-sm z-40 flex items-center justify-between px-6 border-b border-white/20">
+<h2 class="text-headline-lg font-headline-lg font-bold text-on-surface">Automation Conditions</h2>
+<div class="flex items-center gap-4">
+<div class="relative group">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary transition-colors">notifications</span>
+<span class="absolute top-0 right-0 w-2 h-2 bg-error rounded-full border border-white"></span>
+</div>
+<div class="flex items-center gap-2 pl-4 border-l border-outline-variant/50">
+<div class="text-right">
+<p class="text-label-sm font-bold text-on-surface">Admin</p>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-wider">Superuser</p>
+</div>
+<div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container">
+<span class="material-symbols-outlined">account_circle</span>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="ml-[260px] pt-24 pb-12 px-8 min-h-screen">
+<!-- Automation Configuration Form -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
+<!-- Conditions Editor -->
+<section class="lg:col-span-8 space-y-6">
+<div class="glass-card rounded-xl p-6 shadow-sm">
+<div class="flex items-center justify-between mb-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-tertiary-container flex items-center justify-center text-on-tertiary">
+<span class="material-symbols-outlined">tune</span>
+</div>
+<h3 class="text-title-md font-title-md">Set Thresholds for Zone 1</h3>
+</div>
+<select class="bg-surface-container-low border-none rounded-lg text-body-md px-4 py-2 focus:ring-2 focus:ring-primary outline-none">
+<option>Zone 1: North Greenhouse</option>
+<option>Zone 2: South Field</option>
+<option>Zone 3: Hydroponic Rack</option>
+</select>
+</div>
+<!-- Sensor Sliders Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+<!-- Temperature -->
+<div class="space-y-3">
+<div class="flex justify-between items-center">
+<label class="text-label-sm font-label-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-error">device_thermostat</span>
+                                Temperature (°C)
+                            </label>
+<span class="text-body-md font-code-xs font-bold text-primary" id="temp-val">24</span>
+</div>
+<input class="w-full h-1.5 bg-surface-variant rounded-lg appearance-none cursor-pointer custom-range" max="50" min="0" oninput="document.getElementById('temp-val').innerText = this.value" type="range" value="24"/>
+</div>
+<!-- Soil Moisture -->
+<div class="space-y-3">
+<div class="flex justify-between items-center">
+<label class="text-label-sm font-label-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">water_drop</span>
+                                Soil Moisture (%)
+                            </label>
+<span class="text-body-md font-code-xs font-bold text-primary" id="soil-val">35</span>
+</div>
+<input class="w-full h-1.5 bg-surface-variant rounded-lg appearance-none cursor-pointer custom-range" max="100" min="0" oninput="document.getElementById('soil-val').innerText = this.value" type="range" value="35"/>
+</div>
+<!-- Humidity -->
+<div class="space-y-3">
+<div class="flex justify-between items-center">
+<label class="text-label-sm font-label-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-tertiary">humidity_mid</span>
+                                Air Humidity (%)
+                            </label>
+<span class="text-body-md font-code-xs font-bold text-primary" id="hum-val">65</span>
+</div>
+<input class="w-full h-1.5 bg-surface-variant rounded-lg appearance-none cursor-pointer custom-range" max="100" min="0" oninput="document.getElementById('hum-val').innerText = this.value" type="range" value="65"/>
+</div>
+<!-- Light -->
+<div class="space-y-3">
+<div class="flex justify-between items-center">
+<label class="text-label-sm font-label-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-yellow-600">light_mode</span>
+                                Light Level (Lux)
+                            </label>
+<span class="text-body-md font-code-xs font-bold text-primary" id="light-val">1200</span>
+</div>
+<input class="w-full h-1.5 bg-surface-variant rounded-lg appearance-none cursor-pointer custom-range" max="5000" min="0" oninput="document.getElementById('light-val').innerText = this.value" step="100" type="range" value="1200"/>
+</div>
+</div>
+</div>
+<!-- Logic Section -->
+<div class="glass-card rounded-xl p-6 shadow-sm">
+<h3 class="text-title-md font-title-md mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary">alt_route</span>
+                    Automation Logic Builder
+                </h3>
+<div class="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-6 flex flex-wrap items-center gap-3">
+<span class="text-headline-lg font-headline-lg text-on-surface-variant opacity-50">IF</span>
+<select class="px-4 py-2 bg-surface rounded-lg border border-outline-variant font-medium">
+<option>Soil Moisture</option>
+<option>Temperature</option>
+<option>Air Humidity</option>
+<option>Light Level</option>
+</select>
+<select class="px-4 py-2 bg-surface rounded-lg border border-outline-variant font-medium">
+<option>&lt;</option>
+<option>&gt;</option>
+<option>=</option>
+</select>
+<div class="relative">
+<input class="w-24 px-4 py-2 bg-surface rounded-lg border border-outline-variant font-bold text-primary" type="number" value="35"/>
+<span class="absolute right-3 top-2 text-on-surface-variant text-label-sm">%</span>
+</div>
+<span class="text-headline-lg font-headline-lg text-on-surface-variant opacity-50">THEN</span>
+<select class="px-4 py-2 bg-secondary text-on-secondary rounded-lg border-none font-bold">
+<option>Activate Pump 1</option>
+<option>Activate Pump 2</option>
+<option>Open Vent 1</option>
+<option>Enable Lighting</option>
+<option>Stop All Pumps</option>
+</select>
+</div>
+<div class="mt-6 flex justify-end gap-3">
+<button class="px-6 py-2 border border-outline-variant text-on-surface-variant rounded-lg hover:bg-surface-variant/20 transition-all">Clear Form</button>
+<button class="px-8 py-2 bg-primary text-on-primary rounded-lg font-bold shadow-md hover:opacity-90 active:scale-95 transition-all" onclick="showToast()">Save Condition</button>
+</div>
+</div>
+</section>
+<!-- Alert Settings -->
+<aside class="lg:col-span-4 space-y-6">
+<div class="glass-card rounded-xl p-6 shadow-sm h-full">
+<h3 class="text-title-md font-title-md mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-error">notifications_active</span>
+                    Alert Settings
+                </h3>
+<div class="space-y-6">
+<div class="flex items-center justify-between p-4 bg-surface-container-low rounded-xl">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+<span class="material-symbols-outlined">mail</span>
+</div>
+<div>
+<p class="font-bold">Email Alerts</p>
+<p class="text-label-sm text-on-surface-variant">Instant reports</p>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
+</label>
+</div>
+<div class="flex items-center justify-between p-4 bg-surface-container-low rounded-xl">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-sky-100 flex items-center justify-center text-sky-600">
+<span class="material-symbols-outlined">send</span>
+</div>
+<div>
+<p class="font-bold">Telegram Bot</p>
+<p class="text-label-sm text-on-surface-variant">Real-time chat</p>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
+</label>
+</div>
+<div class="p-4 bg-tertiary-container/10 border border-tertiary/20 rounded-xl">
+<p class="text-label-sm font-bold text-tertiary mb-2 uppercase tracking-tighter">System Health</p>
+<div class="flex flex-col gap-3">
+<div class="flex justify-between items-center text-body-md">
+<span class="text-on-surface-variant">Wi-Fi RSSI</span>
+<span class="font-code-xs font-bold">-62 dBm</span>
+</div>
+<div class="flex justify-between items-center text-body-md">
+<span class="text-on-surface-variant">Uptime</span>
+<span class="font-code-xs font-bold">14d 05h</span>
+</div>
+<div class="flex justify-between items-center text-body-md">
+<span class="text-on-surface-variant">ESP32 Core</span>
+<span class="font-code-xs font-bold">42°C</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</aside>
+</div>
+<!-- Active Rules Table -->
+<section class="glass-card rounded-xl shadow-sm overflow-hidden">
+<div class="p-6 border-b border-outline-variant/30 flex justify-between items-center">
+<h3 class="text-title-md font-title-md">Current Active Rules</h3>
+<span class="px-3 py-1 bg-primary-fixed text-on-primary-fixed rounded-full text-label-sm font-bold">3 Running</span>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead class="bg-surface-container-low text-label-sm uppercase text-on-surface-variant">
+<tr>
+<th class="px-6 py-4">Status</th>
+<th class="px-6 py-4">Condition</th>
+<th class="px-6 py-4">Action</th>
+<th class="px-6 py-4">Zone</th>
+<th class="px-6 py-4 text-right">Last Triggered</th>
+<th class="px-6 py-4"></th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/20">
+<tr class="hover:bg-surface-container/30 transition-colors">
+<td class="px-6 py-4">
+<span class="flex items-center gap-2 text-secondary font-bold">
+<span class="w-2 h-2 bg-secondary rounded-full"></span> Active
+                            </span>
+</td>
+<td class="px-6 py-4">Soil Moisture &lt; 35%</td>
+<td class="px-6 py-4"><span class="bg-secondary-container text-on-secondary-container px-2 py-1 rounded text-label-sm font-bold">Activate Pump 1</span></td>
+<td class="px-6 py-4">Zone 1</td>
+<td class="px-6 py-4 text-right font-code-xs">2024-05-12 14:32</td>
+<td class="px-6 py-4 text-right">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">edit</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-error transition-colors ml-2">delete</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container/30 transition-colors">
+<td class="px-6 py-4">
+<span class="flex items-center gap-2 text-secondary font-bold">
+<span class="w-2 h-2 bg-secondary rounded-full"></span> Active
+                            </span>
+</td>
+<td class="px-6 py-4">Temperature &gt; 32°C</td>
+<td class="px-6 py-4"><span class="bg-secondary-container text-on-secondary-container px-2 py-1 rounded text-label-sm font-bold">Open Vent 1</span></td>
+<td class="px-6 py-4">Zone 1</td>
+<td class="px-6 py-4 text-right font-code-xs">2024-05-12 12:10</td>
+<td class="px-6 py-4 text-right">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">edit</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-error transition-colors ml-2">delete</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container/30 transition-colors">
+<td class="px-6 py-4">
+<span class="flex items-center gap-2 text-on-surface-variant opacity-50">
+<span class="w-2 h-2 bg-outline rounded-full"></span> Paused
+                            </span>
+</td>
+<td class="px-6 py-4">Light &lt; 500 Lux</td>
+<td class="px-6 py-4"><span class="bg-surface-variant text-on-surface-variant px-2 py-1 rounded text-label-sm font-bold">Enable Lighting</span></td>
+<td class="px-6 py-4">Zone 3</td>
+<td class="px-6 py-4 text-right font-code-xs">Never</td>
+<td class="px-6 py-4 text-right">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">edit</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-error transition-colors ml-2">delete</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full py-4 px-8 mt-auto flex justify-between items-center ml-[260px] border-t border-outline-variant/30 bg-transparent">
+<p class="text-body-md font-body-md text-secondary dark:text-secondary-fixed">© 2024 ESP32 Smart Irrigation System - System Status: Online</p>
+<div class="flex gap-6">
+<a class="text-on-surface-variant hover:text-primary transition-all duration-200 text-label-sm font-label-sm" href="#">Privacy Policy</a>
+<a class="text-on-surface-variant hover:text-primary transition-all duration-200 text-label-sm font-label-sm" href="#">Terms of Service</a>
+</div>
+</footer>
+<!-- Success Feedback Toast -->
+<div class="fixed bottom-8 right-8 bg-inverse-surface text-inverse-on-surface px-6 py-4 rounded-xl shadow-2xl translate-y-20 opacity-0 transition-all duration-300 flex items-center gap-3 z-[100]" id="success-toast">
+<span class="material-symbols-outlined text-secondary-fixed">check_circle</span>
+<div>
+<p class="font-bold">Configuration Updated</p>
+<p class="text-label-sm opacity-80">Rules saved successfully to ESP32.</p>
+</div>
+</div>
+<script>
+    function showToast() {
+        const toast = document.getElementById('success-toast');
+        toast.classList.remove('translate-y-20', 'opacity-0');
+        toast.classList.add('translate-y-0', 'opacity-100');
+        
+        setTimeout(() => {
+            toast.classList.add('translate-y-20', 'opacity-0');
+            toast.classList.remove('translate-y-0', 'opacity-100');
+        }, 3000);
+    }
+
+    // Simple range input visual sync
+    const ranges = document.querySelectorAll('input[type="range"]');
+    ranges.forEach(range => {
+        range.addEventListener('input', (e) => {
+            const val = (e.target.value - e.target.min) / (e.target.max - e.target.min) * 100;
+            e.target.style.background = `linear-gradient(to right, #0c56d0 ${val}%, #d3e4fe ${val}%)`;
+        });
+        // Initial call
+        const val = (range.value - range.min) / (range.max - range.min) * 100;
+        range.style.background = `linear-gradient(to right, #0c56d0 ${val}%, #d3e4fe ${val}%)`;
+    });
+</script>
+</body></html>

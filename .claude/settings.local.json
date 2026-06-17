@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__stitch__list_projects",
+      "mcp__stitch__list_screens",
+      "mcp__stitch__list_design_systems",
+      "Bash(curl -sL -o \"01-system-overview.html\" \"https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ7Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpaCiVodG1sXzkyYWZhMTQ1NjRiZDQ0YzE4Yjc0NWQ0ZGRiNGMxOWI4EgsSBxC0suWAqRoYAZIBIwoKcHJvamVjdF9pZBIVQhM0NDY3MzkxODY2NjIxMjIxMTE2&filename=&opi=89354086\")",
+      "Bash(curl -sL -o \"02-ai-camera-monitoring.html\" \"https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ7Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpaCiVodG1sXzNlZjEwMzdhYzFhMjQzNTY5OGIzYWM5NzRjMjE3MWEwEgsSBxC0suWAqRoYAZIBIwoKcHJvamVjdF9pZBIVQhM0NDY3MzkxODY2NjIxMjIxMTE2&filename=&opi=89354086\")",
+      "Bash(curl -sL -o \"03-admin-login.html\" \"https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ7Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpaCiVodG1sXzJkOWE4NmMxMGM0NjRlZWE5NjMwYTdjMjZjYWUyODRmEgsSBxC0suWAqRoYAZIBIwoKcHJvamVjdF9pZBIVQhM0NDY3MzkxODY2NjIxMjIxMTE2&filename=&opi=89354086\")",
+      "Bash(curl -sL -o \"04-automation-conditions.html\" \"https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ7Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpaCiVodG1sXzA5NDU0NDhlYTE4NTRkYWE5Mjc2ZmIwZDI2MGE1YTA3EgsSBxC0suWAqRoYAZIBIwoKcHJvamVjdF9pZBIVQhM0NDY3MzkxODY2NjIxMjIxMTE2&filename=&opi=89354086\")",
+      "Bash(curl -sL -o \"05-device-control.html\" \"https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ7Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpaCiVodG1sXzg1NWM0ZjYwYTVhMzQ5OWRiOGU0YzI3NWYyOGMzMzBhEgsSBxC0suWAqRoYAZIBIwoKcHJvamVjdF9pZBIVQhM0NDY3MzkxODY2NjIxMjIxMTE2&filename=&opi=89354086\")",
+      "Bash(npm install *)",
+      "Bash(curl -s -o /dev/null -w \"theme.js: HTTP %{http_code}\\\\n\" http://127.0.0.1:3000/js/theme.js)",
+      "Bash(curl -s -o /dev/null -w \"app.css: HTTP %{http_code}\\\\n\" http://127.0.0.1:3000/css/app.css)",
+      "Bash(curl -s -w \"api latest\\(chua login\\): \" http://127.0.0.1:3000/api/telemetry/latest)",
+      "Bash(curl -s -o /dev/null -w \"socket.io client: HTTP %{http_code}\\\\n\" http://127.0.0.1:3000/socket.io/socket.io.js)"
+    ]
+  }
+}

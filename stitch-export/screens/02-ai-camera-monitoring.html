@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary": "#006e2f",
+                    "tertiary-container": "#00618b",
+                    "on-tertiary": "#ffffff",
+                    "surface-container-high": "#dce9ff",
+                    "tertiary-fixed-dim": "#89ceff",
+                    "on-secondary-fixed-variant": "#005321",
+                    "inverse-primary": "#b2c5ff",
+                    "inverse-surface": "#213145",
+                    "on-tertiary-container": "#a7d9ff",
+                    "surface": "#f8f9ff",
+                    "surface-tint": "#0c56d0",
+                    "surface-variant": "#d3e4fe",
+                    "on-secondary": "#ffffff",
+                    "on-secondary-container": "#007432",
+                    "secondary-fixed-dim": "#4ae176",
+                    "outline-variant": "#c3c6d6",
+                    "surface-container": "#e5eeff",
+                    "on-error": "#ffffff",
+                    "on-surface-variant": "#434654",
+                    "tertiary": "#004869",
+                    "surface-container-low": "#eff4ff",
+                    "secondary-fixed": "#6bff8f",
+                    "surface-container-lowest": "#ffffff",
+                    "primary-fixed-dim": "#b2c5ff",
+                    "primary-container": "#0052cc",
+                    "surface-bright": "#f8f9ff",
+                    "on-error-container": "#93000a",
+                    "on-tertiary-fixed-variant": "#004c6e",
+                    "on-primary-fixed": "#001848",
+                    "error": "#ba1a1a",
+                    "primary-fixed": "#dae2ff",
+                    "on-primary-fixed-variant": "#0040a2",
+                    "on-primary": "#ffffff",
+                    "background": "#f8f9ff",
+                    "on-primary-container": "#c4d2ff",
+                    "outline": "#737685",
+                    "on-background": "#0b1c30",
+                    "surface-dim": "#cbdbf5",
+                    "surface-container-highest": "#d3e4fe",
+                    "error-container": "#ffdad6",
+                    "on-tertiary-fixed": "#001e2f",
+                    "secondary-container": "#6bff8f",
+                    "inverse-on-surface": "#eaf1ff",
+                    "on-surface": "#0b1c30",
+                    "on-secondary-fixed": "#002109",
+                    "primary": "#003d9b",
+                    "tertiary-fixed": "#c9e6ff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "16px",
+                    "container-padding": "24px",
+                    "sidebar-width": "260px",
+                    "card-gap": "20px",
+                    "unit": "8px"
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .video-overlay-active {
+            animation: pulse-border 2s infinite;
+        }
+        @keyframes pulse-border {
+            0% { border-color: rgba(12, 86, 208, 0.3); }
+            50% { border-color: rgba(12, 86, 208, 0.8); }
+            100% { border-color: rgba(12, 86, 208, 0.3); }
+        }
+        .scanline {
+            height: 2px;
+            background: linear-gradient(to right, transparent, #b2c5ff, transparent);
+            position: absolute;
+            width: 100%;
+            top: 0;
+            z-index: 10;
+            animation: scan 3s linear infinite;
+        }
+        @keyframes scan {
+            0% { top: 0%; }
+            100% { top: 100%; }
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface flex min-h-screen">
+<!-- SideNavBar Component -->
+<aside class="fixed left-0 top-0 h-screen w-[260px] bg-white/70 backdrop-blur-xl border-r border-white/20 shadow-sm z-50 flex flex-col p-4 gap-2">
+<div class="mb-6 px-2">
+<h1 class="text-title-md font-title-md font-bold text-primary">AquaControl Pro</h1>
+<p class="text-label-sm font-label-sm text-on-surface-variant">ESP32 Irrigation System</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-variant/50 transition-colors rounded-lg font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span>Overview</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-variant/50 transition-colors rounded-lg font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined">sensors</span>
+<span>Sensors</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-variant/50 transition-colors rounded-lg font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined">toggle_on</span>
+<span>Controls</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 bg-primary-container text-on-primary-container rounded-lg font-semibold font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined">videocam</span>
+<span>Camera</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-variant/50 transition-colors rounded-lg font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined">history</span>
+<span>History</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-variant/50 transition-colors rounded-lg font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined">settings_input_component</span>
+<span>Configuration</span>
+</a>
+</nav>
+<div class="mt-auto space-y-1 pt-4 border-t border-outline-variant/30">
+<div class="px-3 py-2 mb-2 bg-secondary-container/20 rounded-lg">
+<span class="flex items-center gap-2 text-secondary font-label-sm text-label-sm">
+<span class="w-2 h-2 bg-secondary rounded-full animate-pulse"></span>
+                System: Online
+            </span>
+</div>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-variant/50 transition-colors rounded-lg font-label-sm text-label-sm" href="#">
+<span class="material-symbols-outlined">help</span>
+<span>Support</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-variant/50 transition-colors rounded-lg font-label-sm text-label-sm" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span>Settings</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-[260px] flex-1 flex flex-col">
+<!-- TopAppBar Component -->
+<header class="h-16 flex items-center justify-between px-6 bg-white/70 backdrop-blur-xl border-b border-white/20 shadow-sm sticky top-0 z-40">
+<h2 class="text-headline-lg font-headline-lg font-bold text-on-surface">AI Camera &amp; Monitoring</h2>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2 bg-surface-container-high px-3 py-1.5 rounded-full">
+<span class="material-symbols-outlined text-primary text-sm">wifi</span>
+<span class="text-label-sm font-label-sm text-on-surface-variant">-62 dBm</span>
+</div>
+<div class="flex items-center gap-3 border-l border-outline-variant/30 pl-4">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">notifications</button>
+<div class="flex items-center gap-2">
+<span class="text-label-sm font-label-sm font-semibold">Admin</span>
+<img alt="User avatar" class="w-8 h-8 rounded-full border border-primary/20 object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAfnvOJ5TlOp3sltssvDgIZvP_z3WNksiUyVWu485ETTBHslTpMsSBCVMVxKwhH10LCvEoZn18lNNpmQ_ZoY08MJZ6mh-763WcfVVyA7kslJKLQy5eU5MC4xghLz1Jk1KV0JvDp9H0sJXKmjffLYzPJFx-v-rPhV0iI0rM61Zr9rcr_vJt4k-ub_MQZZgTvJaDvE8HOc98b7hQkdn1QnFAHnGzWqCX1GqLSbm9wO-aAk2bwtq_2TAUUAO8MFpw_ZQbe9xftl0i6xo4"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Scrollable Content -->
+<div class="p-6 flex flex-col gap-6">
+<!-- Live Feed & Analysis Section -->
+<div class="grid grid-cols-12 gap-6">
+<!-- Large Live Feed -->
+<div class="col-span-12 lg:col-span-9">
+<div class="glass-card rounded-2xl overflow-hidden shadow-sm relative group aspect-video bg-black flex items-center justify-center border-2 border-transparent video-overlay-active">
+<div class="scanline"></div>
+<img alt="Live Stream" class="w-full h-full object-cover opacity-90" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBCNnI8sEvNYeGZr1uFH-tLdlUdWdAYU53fsfS9ntI6uSGUXt8TMrp1hXl2mJ1jTXYYR_Gzbno-oqZIaU4gbu-ekodXcwhBstWpTWlsGr9pZBE-86n9XDHOHsF-Hf3sD7xAzKtmtu-xHlW7UU90e4pNY41rwPXAIcEIJPl5Y0kakWohuOEl0Pb4lYOU3wMu_rU1klOnzBtnWayQozn3PmxQ8-yUWkgIM3euGxieN-7OVr_zo0TJnsN0LqrqBmlK8tN33MBwoSRqnHI"/>
+<!-- AI Overlays -->
+<div class="absolute inset-0 pointer-events-none p-8">
+<!-- Bounding Box 1 -->
+<div class="absolute top-[20%] left-[30%] w-[150px] h-[180px] border-2 border-primary/80 rounded-lg shadow-[0_0_15px_rgba(12,86,208,0.3)]">
+<div class="absolute -top-7 left-0 bg-primary/80 text-white text-[10px] px-2 py-0.5 rounded-sm flex flex-col font-code-xs text-code-xs"><span>Leaf: 0.98 (Health)</span><span>W: 12.4cm H: 15.8cm</span></div>
+</div>
+<!-- Bounding Box 2 (Warning) -->
+<div class="absolute top-[50%] right-[25%] w-[120px] h-[110px] border-2 border-error/80 rounded-lg shadow-[0_0_15px_rgba(186,26,26,0.3)]">
+<div class="absolute -top-7 left-0 bg-error/80 text-white text-[10px] px-2 py-0.5 rounded-sm flex flex-col font-code-xs text-code-xs"><span>Warning: Leaf spot (0.82)</span><span>W: 4.2cm H: 3.8cm</span></div>
+</div>
+</div>
+<!-- Top Feed Controls -->
+<div class="absolute top-4 left-4 flex gap-2">
+<span class="bg-error px-2 py-1 rounded text-white text-[10px] font-bold tracking-widest flex items-center gap-1">
+<span class="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span> LIVE
+                        </span>
+<span class="bg-black/50 backdrop-blur-md px-2 py-1 rounded text-white text-[10px] font-code-xs text-code-xs uppercase tracking-tight">
+                            192.168.1.144 | 1080p | 24fps
+                        </span>
+</div>
+</div>
+</div>
+<!-- Live Stats & Controls -->
+<div class="col-span-12 lg:col-span-3 flex flex-col gap-4">
+<!-- Quick Stats Card -->
+<div class="glass-card p-5 rounded-2xl shadow-sm">
+<h3 class="text-label-sm font-label-sm text-on-surface-variant uppercase mb-3">AI Stats</h3>
+<div class="space-y-4">
+<div class="flex justify-between items-end border-b border-outline-variant/30 pb-2">
+<span class="text-body-md font-body-md text-on-surface-variant">Objects</span>
+<span class="text-headline-lg font-headline-lg text-primary">14</span>
+</div>
+<div class="flex justify-between items-end border-b border-outline-variant/30 pb-2">
+<span class="text-body-md font-body-md text-on-surface-variant">Health</span>
+<span class="text-title-md font-title-md text-secondary">Good (92%)</span>
+</div>
+<div class="flex justify-between items-end border-b border-outline-variant/30 pb-2">
+<span class="text-body-md font-body-md text-on-surface-variant">Last seen</span>
+<span class="text-label-sm font-label-sm">Just now</span>
+</div>
+<div class="flex justify-between items-end border-b border-outline-variant/30 pb-2"><span class="text-body-md font-body-md text-on-surface-variant">Canopy Width</span><span class="text-label-sm font-label-sm">12.4 cm</span></div><div class="flex justify-between items-end border-b border-outline-variant/30 pb-2"><span class="text-body-md font-body-md text-on-surface-variant">Canopy Height</span><span class="text-label-sm font-label-sm">15.8 cm</span></div></div>
+</div>
+<!-- Main Actions -->
+<div class="glass-card p-5 rounded-2xl shadow-sm flex-1 flex flex-col gap-3">
+<button class="w-full bg-primary text-white py-3 rounded-xl flex items-center justify-center gap-2 hover:opacity-90 active:scale-95 transition-all">
+<span class="material-symbols-outlined">photo_camera</span>
+<span class="font-semibold">Take Snapshot</span>
+</button>
+<button class="w-full border-2 border-outline-variant/30 py-3 rounded-xl flex items-center justify-center gap-2 hover:bg-surface-container-low transition-colors active:scale-95">
+<span class="material-symbols-outlined text-error">fiber_manual_record</span>
+<span class="font-semibold">Record Video</span>
+</button>
+<div class="mt-4 pt-4 border-t border-outline-variant/30">
+<div class="flex items-center justify-between p-3 bg-surface-container-low rounded-xl">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">psychology</span>
+<span class="text-body-md font-body-md font-medium">AI Analysis</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-outline-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
+</label>
+</div>
+</div>
+<!-- Status Feed -->
+<div class="mt-4 overflow-y-auto max-h-[120px] pr-2 custom-scrollbar">
+<p class="text-label-sm font-label-sm font-semibold uppercase text-on-surface-variant/60 mb-2">Events</p>
+<div class="space-y-2">
+<div class="text-[11px] leading-tight text-on-surface-variant border-l-2 border-secondary pl-2 py-1">
+<span class="font-bold">14:20:11</span> - Motion detected: Gentle leaf sway
+                            </div>
+<div class="text-[11px] leading-tight text-on-surface-variant border-l-2 border-error pl-2 py-1 bg-error/5">
+<span class="font-bold">14:18:05</span> - <span class="text-error">Disease warning: Unusual leaf spots (Zone 3)</span>
+</div>
+<div class="text-[11px] leading-tight text-on-surface-variant border-l-2 border-primary pl-2 py-1">
+<span class="font-bold">14:15:22</span> - Auto Snapshot: Periodic 30m capture
+                            </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Gallery Section -->
+<section class="mt-4">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-title-md font-title-md font-bold">Recent Images</h3>
+<button class="text-primary font-label-sm text-label-sm flex items-center gap-1 hover:underline">
+                    View All <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+<!-- Gallery Item 1 -->
+<div class="glass-card p-1 rounded-xl group cursor-pointer hover:shadow-md transition-all">
+<div class="aspect-square rounded-lg overflow-hidden relative">
+<img alt="Snapshot 1" class="w-full h-full object-cover group-hover:scale-105 transition-transform" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD8gGqgI7zL4Jm6KIKV-CLKIZBJV5YQvCAasSwalv4LdC_5Obz6VHWyJl6b2wEezwgEkhAgRioc6DNOiasjmi8xBVuZoE2Wq23iCU-V8g0sNcyDMKwaxx8a18wWUeiHuri1rcnLQ12qJ0a9rkpKPYkGx06q29mv48EmHfRt_EgLZQGcy8Y-ngcXAVE3RdOz2nKYUVcIa-MmXx2iH41ijX1ghA-0CQ3LBlW-KHvxhoj8v84XYoXloJHoDhlKs-jolmNs3iBcF08t-IU"/>
+<div class="absolute bottom-1 right-1 bg-black/60 backdrop-blur-sm text-[9px] text-white px-1.5 py-0.5 rounded">14:15</div>
+</div>
+<div class="p-2">
+<p class="text-[10px] font-bold text-on-surface-variant truncate">Disease: None (Healthy)</p>
+</div>
+</div>
+<!-- Gallery Item 2 -->
+<div class="glass-card p-1 rounded-xl group cursor-pointer hover:shadow-md transition-all">
+<div class="aspect-square rounded-lg overflow-hidden relative">
+<img alt="Snapshot 2" class="w-full h-full object-cover group-hover:scale-105 transition-transform" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBWvebMe2WL1xdSpGq5gXd7vavNqnNgevYxRyBf7hCQ-938jZDhbc-rUR9lvNuxn5gr3DI_H3vKTuDAfS-thfo06ya6Mt7rIZW5p4CCdxZ7HY_QX4xgRyIi83u20ii25Ix1ABGopFy9zURXLvky0YcwmWY5wV0Sd3-Ahjw-WKPuNRN4Gw4O87pQHh_2Tnkb8incMOKpsg_z0285jXHDL64RtI45PNZQ2YA0YdGPRYXL2PpzViOEz1IsthnwUGY1Jl8MbubhYsJ5SsQ"/>
+<div class="absolute bottom-1 right-1 bg-black/60 backdrop-blur-sm text-[9px] text-white px-1.5 py-0.5 rounded">13:45</div>
+</div>
+<div class="p-2">
+<p class="text-[10px] font-bold text-error truncate">Leaf spot: Warning</p>
+</div>
+</div>
+<!-- Gallery Item 3 -->
+<div class="glass-card p-1 rounded-xl group cursor-pointer hover:shadow-md transition-all">
+<div class="aspect-square rounded-lg overflow-hidden relative">
+<img alt="Snapshot 3" class="w-full h-full object-cover group-hover:scale-105 transition-transform" src="https://lh3.googleusercontent.com/aida-public/AB6AXuChj9Xm_Ccx20_6vIrF6_wj9jZdG_FNAL6i3TsBYu326LIiWb7K2caQ9NVH3bRdndsnRZeJz1pfhHQMr9-d1qb-5jBgifohtLcN7QWW3y9DMc0bFlsrSalgGSKUCWcBDiEkp-xw8EF0vHU5zqyHOAdO0VFSLCPjIkBdTYtYmL_8FKRUk0buwkC07mCT0EJDondQE871kZH3KC-qQ8qIiOvyU97bkSoY1I6YrxHADas_RKklB_1YuF9oaq4GGPAnyVXLCi8jFkEv4eI"/>
+<div class="absolute bottom-1 right-1 bg-black/60 backdrop-blur-sm text-[9px] text-white px-1.5 py-0.5 rounded">13:15</div>
+</div>
+<div class="p-2">
+<p class="text-[10px] font-bold text-on-surface-variant truncate">Disease: None (Healthy)</p>
+</div>
+</div>
+<!-- Gallery Item 4 -->
+<div class="glass-card p-1 rounded-xl group cursor-pointer hover:shadow-md transition-all">
+<div class="aspect-square rounded-lg overflow-hidden relative">
+<img alt="Snapshot 4" class="w-full h-full object-cover group-hover:scale-105 transition-transform" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAuR4l8RFapmxOqI0DcV1jrnnsrpRNmlmH7neUaKO2tkX-rl-g5HI8VXehTcdN5lUwLc3xLge7uh5j45K9XH5i9wp2sjHd7tI02-2W4KYLSoig0OGr3AZIPoy1SVC33VgyaU7UQoPQ7xvONhQ2pzkHyYYCvnZCMTVuXUBPcFnvr1u7CaRPpBTCjIfzIdSSJl15VHREc2iLdJxmXDdAEcWmtpm1D51mSWF7nMzIB4ouNQj2tzNyY3O2JS2_tRHrb8M0lju3PgXhjxXE"/>
+<div class="absolute bottom-1 right-1 bg-black/60 backdrop-blur-sm text-[9px] text-white px-1.5 py-0.5 rounded">12:45</div>
+</div>
+<div class="p-2">
+<p class="text-[10px] font-bold text-on-surface-variant truncate">Pest detected: 2</p>
+</div>
+</div>
+<!-- Gallery Item 5 -->
+<div class="glass-card p-1 rounded-xl group cursor-pointer hover:shadow-md transition-all">
+<div class="aspect-square rounded-lg overflow-hidden relative">
+<img alt="Snapshot 5" class="w-full h-full object-cover group-hover:scale-105 transition-transform" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDnzov0hURHnQr9Hf2jKXll1pyMnXRQmVlGfm6PwVK2dxQ0diaXj2_3HebkSHRuHlsAP0HP4uQ6s51Asl1Q9SjQwSkirHKYahdb2oEI5bvEAbd-t4JVsr8p-VC3qRwdI9r-kixucquvJv_g9gmtDW6lWSYzuJbVbyJ-xfPX_re5crRpk-7w9-KyKTu-fLWrb1vy8Th5idvoXngim1do7m9QTFydioueqezg2P4iAJnLI6-f0FmmwTmfQZ878wuh4VLG0LSWhn1t02M"/>
+<div class="absolute bottom-1 right-1 bg-black/60 backdrop-blur-sm text-[9px] text-white px-1.5 py-0.5 rounded">12:15</div>
+</div>
+<div class="p-2">
+<p class="text-[10px] font-bold text-on-surface-variant truncate">Detection: Good</p>
+</div>
+</div>
+<!-- Gallery Item 6 -->
+<div class="glass-card p-1 rounded-xl group cursor-pointer hover:shadow-md transition-all">
+<div class="aspect-square rounded-lg overflow-hidden relative">
+<img alt="Snapshot 6" class="w-full h-full object-cover group-hover:scale-105 transition-transform" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCbHujtju8BPqE1wNRrs6MsrFMZ6cLGQas7Ne863NueZ8X2AIiZzhrVZ5KZ_fyuUFpRs47-ErQMA0rA93bHWkC7mUd-x1quuHPAMjY8HOUEkd0suGXazl0Jw1aWO1FAQ55C5yKA0DobYZiWehaX57V_0jOPPV8qRVjDMF6gxgKruHHcgZ5cGh29PCdzgekmc7R8Ob6T8wB8nUvZH6hWMKWfyzcaBqnBT9QX_l3DTvMMqFukWW5_4LIPJHGTpgLlhA0n7HsSEMEn5tY"/>
+<div class="absolute bottom-1 right-1 bg-black/60 backdrop-blur-sm text-[9px] text-white px-1.5 py-0.5 rounded">11:45</div>
+</div>
+<div class="p-2">
+<p class="text-[10px] font-bold text-on-surface-variant truncate">Sprouting: Monitoring</p>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Footer Component -->
+<footer class="w-full py-4 px-8 mt-auto border-t border-outline-variant/30 flex justify-between items-center ml-0">
+<p class="text-body-md font-body-md text-secondary">© 2024 ESP32 Smart Irrigation System - System Status: Online</p>
+<div class="flex gap-6">
+<a class="text-on-surface-variant hover:text-primary transition-colors text-label-sm font-label-sm" href="#">Privacy Policy</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors text-label-sm font-label-sm" href="#">Terms of Service</a>
+</div>
+</footer>
+</main>
+<script>
+    // Micro-interaction for the Live Feed
+    document.querySelector('.col-span-12.lg\\:col-span-9').addEventListener('click', function() {
+        this.classList.toggle('scale-[1.01]');
+        setTimeout(() => this.classList.toggle('scale-[1.01]'), 200);
+    });
+
+    // Toggle simulation for AI Analysis
+    const aiToggle = document.querySelector('input[type="checkbox"]');
+    const overlays = document.querySelector('.absolute.inset-0.pointer-events-none.p-8');
+    const scanline = document.querySelector('.scanline');
+    
+    aiToggle.addEventListener('change', function() {
+        if(this.checked) {
+            overlays.style.display = 'block';
+            scanline.style.display = 'block';
+        } else {
+            overlays.style.display = 'none';
+            scanline.style.display = 'none';
+        }
+    });
+</script>
+</body></html>

@@ -1,0 +1,33 @@
+{
+  "name": "aquacontrol-pro",
+  "version": "1.0.0",
+  "description": "Web dashboard giám sát hệ thống vườn tưới thông minh ESP32 (AquaControl Pro)",
+  "main": "server/app.js",
+  "scripts": {
+    "start": "node server/app.js",
+    "dev": "nodemon server/app.js",
+    "seed": "node server/scripts/seedAdmin.js",
+    "simulate": "node server/scripts/simulate.js"
+  },
+  "keywords": [
+    "esp32",
+    "iot",
+    "irrigation",
+    "dashboard",
+    "smart-garden"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-session": "^1.18.0",
+    "json2csv": "^6.0.0-alpha.2",
+    "mssql": "^11.0.1",
+    "socket.io": "^4.7.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  }
+}

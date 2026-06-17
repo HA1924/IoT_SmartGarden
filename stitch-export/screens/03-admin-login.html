@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Login | AquaControl Pro</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary": "#006e2f",
+                    "tertiary-container": "#00618b",
+                    "on-tertiary": "#ffffff",
+                    "surface-container-high": "#dce9ff",
+                    "tertiary-fixed-dim": "#89ceff",
+                    "on-secondary-fixed-variant": "#005321",
+                    "inverse-primary": "#b2c5ff",
+                    "inverse-surface": "#213145",
+                    "on-tertiary-container": "#a7d9ff",
+                    "surface": "#f8f9ff",
+                    "surface-tint": "#0c56d0",
+                    "surface-variant": "#d3e4fe",
+                    "on-secondary": "#ffffff",
+                    "on-secondary-container": "#007432",
+                    "secondary-fixed-dim": "#4ae176",
+                    "outline-variant": "#c3c6d6",
+                    "surface-container": "#e5eeff",
+                    "on-error": "#ffffff",
+                    "on-surface-variant": "#434654",
+                    "tertiary": "#004869",
+                    "surface-container-low": "#eff4ff",
+                    "secondary-fixed": "#6bff8f",
+                    "surface-container-lowest": "#ffffff",
+                    "primary-fixed-dim": "#b2c5ff",
+                    "primary-container": "#0052cc",
+                    "surface-bright": "#f8f9ff",
+                    "on-error-container": "#93000a",
+                    "on-tertiary-fixed-variant": "#004c6e",
+                    "on-primary-fixed": "#001848",
+                    "error": "#ba1a1a",
+                    "primary-fixed": "#dae2ff",
+                    "on-primary-fixed-variant": "#0040a2",
+                    "on-primary": "#ffffff",
+                    "background": "#f8f9ff",
+                    "on-primary-container": "#c4d2ff",
+                    "outline": "#737685",
+                    "on-background": "#0b1c30",
+                    "surface-dim": "#cbdbf5",
+                    "surface-container-highest": "#d3e4fe",
+                    "error-container": "#ffdad6",
+                    "on-tertiary-fixed": "#001e2f",
+                    "secondary-container": "#6bff8f",
+                    "inverse-on-surface": "#eaf1ff",
+                    "on-surface": "#0b1c30",
+                    "on-secondary-fixed": "#002109",
+                    "primary": "#003d9b",
+                    "tertiary-fixed": "#c9e6ff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "title-md": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "code-xs": ["JetBrains Mono"],
+                    "headline-lg": ["Inter"],
+                    "body-md": ["Inter"]
+            },
+            "fontSize": {
+                    "title-md": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .bg-pattern {
+            background-color: #f8f9ff;
+            background-image: radial-gradient(rgba(0, 110, 47, 0.05) 1px, transparent 1px), radial-gradient(rgba(12, 86, 208, 0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+            background-position: 0 0, 20px 20px;
+        }
+    </style>
+</head>
+<body class="bg-pattern flex flex-col justify-center items-center p-6">
+<!-- Login Container -->
+<main class="w-full max-w-md animate-in fade-in zoom-in duration-700">
+<!-- Header Branding -->
+<div class="text-center mb-10">
+<div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary-container/20 mb-4 ring-8 ring-primary-container/5">
+<span class="material-symbols-outlined text-primary text-4xl" data-icon="opacity">opacity</span>
+<span class="material-symbols-outlined text-secondary text-2xl -ml-2" data-icon="leafy_green" style="font-variation-settings: 'FILL' 1;">dual_screen</span>
+</div>
+<h1 class="text-headline-lg font-headline-lg text-on-surface tracking-tight">AquaControl Pro</h1>
+<p class="text-body-md font-body-md text-on-surface-variant mt-1">Smart Irrigation Garden System</p>
+</div>
+<!-- Glassmorphism Login Card -->
+<div class="glass-card rounded-xl p-8 shadow-2xl relative overflow-hidden">
+<div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-secondary"></div>
+<h2 class="text-title-md font-title-md text-on-surface mb-6">Admin Login</h2>
+<form action="#" class="space-y-6" id="loginForm">
+<!-- Username Field -->
+<div class="space-y-2">
+<label class="text-label-sm font-label-sm text-on-surface-variant ml-1" for="username">Username</label>
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-outline text-lg transition-colors group-focus-within:text-primary" data-icon="person">person</span>
+</div>
+<input class="block w-full pl-10 pr-3 py-3 bg-surface-container-lowest border border-outline-variant/50 rounded-lg text-body-md font-body-md focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" id="username" name="username" placeholder="Enter your username" required="" type="text"/>
+</div>
+</div>
+<!-- Password Field -->
+<div class="space-y-2">
+<label class="text-label-sm font-label-sm text-on-surface-variant ml-1" for="password">Password</label>
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-outline text-lg transition-colors group-focus-within:text-primary" data-icon="lock">lock</span>
+</div>
+<input class="block w-full pl-10 pr-10 py-3 bg-surface-container-lowest border border-outline-variant/50 rounded-lg text-body-md font-body-md focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" id="password" name="password" placeholder="••••••••" required="" type="password"/>
+<button class="absolute inset-y-0 right-0 pr-3 flex items-center text-on-surface-variant hover:text-primary" id="togglePassword" type="button">
+<span class="material-symbols-outlined text-lg" data-icon="visibility">visibility</span>
+</button>
+</div>
+</div>
+<!-- Security Features -->
+<div class="flex items-center justify-between py-1">
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-outline-variant/30 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
+<span class="ml-3 text-label-sm font-label-sm text-on-surface-variant">Remember me</span>
+</label>
+<a class="text-label-sm font-label-sm text-primary hover:underline transition-all" href="#">Forgot password?</a>
+</div>
+<!-- 2FA Hint -->
+<div class="flex items-start gap-3 p-3 bg-primary-fixed/30 rounded-lg">
+<span class="material-symbols-outlined text-primary text-md" data-icon="security" style="font-variation-settings: 'FILL' 1;">security</span>
+<p class="text-label-sm font-label-sm text-on-primary-fixed-variant leading-tight">
+                    Note: The system requires Two-Factor Authentication (2FA) after a successful login.
+                </p>
+</div>
+<!-- Submit Button -->
+<button class="w-full bg-primary text-on-primary py-3 px-4 rounded-lg font-semibold text-body-md flex items-center justify-center gap-2 hover:bg-primary-container hover:text-on-primary-container transition-all active:scale-[0.98] shadow-lg shadow-primary/20" type="submit">
+<span>Login to System</span>
+<span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</form>
+<!-- Bottom Illustration Space -->
+<div class="mt-8 pt-8 border-t border-outline-variant/30 text-center">
+<img alt="Smart Agriculture" class="w-full h-32 object-cover rounded-lg opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-500" data-alt="A clean, minimalist high-tech macro shot of a green seedling growing in fertile soil, with a blurred modern ESP32 circuit board in the background. The scene is illuminated with soft, natural morning sunlight coming from a window, creating a serene and professional agricultural technology atmosphere. The color palette is dominated by fresh greens, earthy browns, and tech-blue highlights, emphasizing growth and precision engineering." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrNNFDtVgIkTUDTWojv9bo3Q7oRVjqXZHkIqGFDhW3D1IOunbOVyn7SkHS82UDQlhm9FL2mGZb1lRrgfSc4huC5BN1_MR4slBvE1YxI2tUSb-LPLskygNAxfLdZRTvTd_72ruG5nU8ycuK2bZ2V87Xs1-PMMdoUeTe--dgP1wVYxCdtoTK8T-TadN9qIpqlzUwPTgRjlhZi5GvscYXpIKsGgMhGz0En3cjCQKnbGjXF5vlgnqnBxIbfrAm8dvP_eZBvSFF16lT__I"/>
+</div>
+</div>
+<!-- Footer -->
+<footer class="mt-8 flex flex-col items-center gap-2">
+<p class="text-label-sm font-label-sm text-outline">
+            © 2024 ESP32 Smart Irrigation System - v2.4.0
+        </p>
+<div class="flex gap-4">
+<a class="text-label-sm font-label-sm text-on-surface-variant hover:text-primary" href="#">Help</a>
+<span class="text-outline-variant">|</span>
+<a class="text-label-sm font-label-sm text-on-surface-variant hover:text-primary" href="#">Privacy Policy</a>
+</div>
+</footer>
+</main>
+<!-- Background Atmospheric Effect -->
+<div class="fixed bottom-0 right-0 p-10 -z-10 opacity-20 pointer-events-none">
+<span class="material-symbols-outlined text-[300px] text-primary-container rotate-12" data-icon="potted_plant">potted_plant</span>
+</div>
+<script>
+    // Micro-interaction for form submission
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const btn = this.querySelector('button[type="submit"]');
+        const originalContent = btn.innerHTML;
+        
+        btn.innerHTML = '<span class="material-symbols-outlined animate-spin" data-icon="progress_activity">progress_activity</span> <span>Processing...</span>';
+        btn.disabled = true;
+        
+        setTimeout(() => {
+            btn.innerHTML = '<span class="material-symbols-outlined" data-icon="check_circle">check_circle</span> <span>Success</span>';
+            btn.classList.replace('bg-primary', 'bg-secondary');
+            
+            setTimeout(() => {
+                alert('Login successful! Redirecting to Dashboard...');
+                // window.location.href = '/dashboard';
+                btn.innerHTML = originalContent;
+                btn.disabled = false;
+                btn.classList.replace('bg-secondary', 'bg-primary');
+            }, 1000);
+        }, 1500);
+    });
+
+    // Simple visibility toggle logic
+    const togglePass = document.getElementById('togglePassword');
+    const passInput = document.getElementById('password');
+    togglePass.addEventListener('click', () => {
+        const isPass = passInput.type === 'password';
+        passInput.type = isPass ? 'text' : 'password';
+        togglePass.querySelector('span').innerText = isPass ? 'visibility_off' : 'visibility';
+    });
+</script>
+</body></html>

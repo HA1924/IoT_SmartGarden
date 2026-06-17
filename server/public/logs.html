@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Logs | AquaControl Pro</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+  <script src="/js/theme.js"></script>
+  <link rel="stylesheet" href="/css/app.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Material+Symbols+Outlined&display=swap" rel="stylesheet" />
+  <script src="/socket.io/socket.io.js"></script>
+</head>
+<body class="bg-background text-on-surface min-h-screen" data-page="logs" data-title="System Logs">
+  <div id="sidebar-root"></div>
+  <div id="topbar-root"></div>
+
+  <main class="lg:ml-[260px] pt-24 px-4 lg:px-8 pb-12">
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <h2 class="text-title-md font-bold">Event Log</h2>
+        <p class="text-body-md text-on-surface-variant">System automation, control, and alert activity.</p>
+      </div>
+      <div class="flex items-center gap-2">
+        <select id="level-filter" class="bg-surface-container border border-outline-variant rounded-lg text-label-sm py-2 px-3 focus:ring-primary">
+          <option value="">All levels</option>
+          <option value="info">Info</option>
+          <option value="warning">Warning</option>
+          <option value="error">Error</option>
+        </select>
+        <button id="clear-logs-btn" class="flex items-center gap-1.5 bg-error/10 text-error rounded-lg text-label-sm font-semibold py-2 px-3 hover:bg-error/20 transition-colors">
+          <span class="material-symbols-outlined text-[18px]">delete_sweep</span> Clear logs
+        </button>
+      </div>
+    </div>
+
+    <div class="glass-card rounded-2xl overflow-hidden">
+      <table class="w-full text-body-md">
+        <thead class="bg-surface-container text-on-surface-variant text-label-sm uppercase">
+          <tr>
+            <th class="text-left px-5 py-3 w-44">Time</th>
+            <th class="text-left px-5 py-3 w-24">Level</th>
+            <th class="text-left px-5 py-3 w-32">Source</th>
+            <th class="text-left px-5 py-3">Message</th>
+          </tr>
+        </thead>
+        <tbody id="logs-tbody" class="divide-y divide-outline-variant/30"></tbody>
+      </table>
+    </div>
+
+    <!-- Phân trang -->
+    <div id="logs-pager" class="hidden flex items-center justify-between mt-4 text-label-sm">
+      <p id="pager-info" class="text-on-surface-variant"></p>
+      <div class="flex items-center gap-2">
+        <button id="pager-prev" class="flex items-center gap-1 bg-surface-container rounded-lg py-1.5 px-3 font-semibold hover:bg-surface-container-high transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+          <span class="material-symbols-outlined text-[18px]">chevron_left</span> Prev
+        </button>
+        <span id="pager-pages" class="text-on-surface-variant"></span>
+        <button id="pager-next" class="flex items-center gap-1 bg-surface-container rounded-lg py-1.5 px-3 font-semibold hover:bg-surface-container-high transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+          Next <span class="material-symbols-outlined text-[18px]">chevron_right</span>
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <script src="/js/common.js"></script>
+  <script src="/js/logs.js"></script>
+</body>
+</html>

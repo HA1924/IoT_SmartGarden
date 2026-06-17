@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Configuration | AquaControl Pro</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+  <script src="/js/theme.js"></script>
+  <link rel="stylesheet" href="/css/app.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Material+Symbols+Outlined&display=swap" rel="stylesheet" />
+  <script src="/socket.io/socket.io.js"></script>
+</head>
+<body class="bg-background text-on-surface min-h-screen" data-page="configuration" data-title="Automation Settings">
+  <div id="sidebar-root"></div>
+  <div id="topbar-root"></div>
+
+  <main class="lg:ml-[260px] pt-24 px-4 lg:px-8 pb-12">
+    <div class="mb-6">
+      <h2 class="text-title-md font-bold">Automatic Irrigation &amp; Lighting Rules</h2>
+      <p class="text-body-md text-on-surface-variant">Set thresholds for each zone. When a device is in <b>Auto</b> mode, the system uses these thresholds.</p>
+    </div>
+
+    <section id="rules-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6"></section>
+  </main>
+
+  <script src="/js/common.js"></script>
+  <script src="/js/configuration.js"></script>
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Overview | AquaControl Pro</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script src="/js/theme.js"></script>
+  <link rel="stylesheet" href="/css/app.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono&family=Material+Symbols+Outlined&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+</head>
+<body class="bg-background text-on-surface min-h-screen" data-page="overview" data-title="Irrigation Dashboard">
+  <div id="sidebar-root"></div>
+  <div id="topbar-root"></div>
+
+  <main class="lg:ml-[260px] pt-24 px-4 lg:px-8 pb-12">
+    <!-- Cảnh báo -->
+    <div id="alert-banner" class="hidden mb-8 p-4 bg-error-container/50 border border-error/20 rounded-xl flex items-center gap-4">
+      <span class="material-symbols-outlined text-error fill-icon">warning</span>
+      <div class="flex-1">
+        <p id="alert-text" class="text-body-md font-bold text-on-error-container"></p>
+      </div>
+    </div>
+
+    <!-- Lưới tóm tắt 3 zone -->
+    <section id="zone-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <!-- card zone được render bằng overview.js -->
+    </section>
+
+    <!-- Biểu đồ -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div class="lg:col-span-2 glass-card p-6 rounded-2xl">
+        <div class="flex justify-between items-center mb-6">
+          <div>
+            <h3 class="text-title-md font-bold">Temperature &amp; Humidity History</h3>
+            <p class="text-label-sm text-on-surface-variant">Average across zones</p>
+          </div>
+          <select id="range-select" class="bg-surface-container border-none rounded-lg text-label-sm py-1 pl-3 pr-8 focus:ring-primary">
+            <option value="24h">24 Hours</option>
+            <option value="7d">7 Days</option>
+            <option value="30d">30 Days</option>
+          </select>
+        </div>
+        <div class="h-64"><canvas id="th-chart"></canvas></div>
+      </div>
+
+      <div class="glass-card p-6 rounded-2xl">
+        <h3 class="text-title-md font-bold mb-1">Soil Moisture Comparison</h3>
+        <p class="text-label-sm text-on-surface-variant mb-6">% moisture by zone</p>
+        <div id="soil-bars" class="space-y-6"></div>
+        <div class="mt-8 p-4 bg-surface-container-low rounded-xl border border-white/50">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="material-symbols-outlined text-primary">analytics</span>
+            <p class="text-label-sm font-bold">System Analysis</p>
+          </div>
+          <p id="soil-analysis" class="text-body-md text-on-surface-variant leading-tight">Loading...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Biểu đồ độ ẩm đất theo zone -->
+    <section class="mt-8 glass-card p-6 rounded-2xl">
+      <div class="flex flex-wrap justify-between items-center gap-3 mb-6">
+        <div>
+          <h3 class="text-title-md font-bold">Soil Moisture History by Zone</h3>
+          <p class="text-label-sm text-on-surface-variant">Select zones to display</p>
+        </div>
+        <div id="soil-zone-toggles" class="flex items-center gap-4 text-label-sm font-semibold">
+          <label class="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" data-zone="1" checked class="rounded border-outline-variant text-primary focus:ring-primary" /> Zone 1</label>
+          <label class="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" data-zone="2" checked class="rounded border-outline-variant text-secondary focus:ring-secondary" /> Zone 2</label>
+          <label class="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" data-zone="3" checked class="rounded border-outline-variant text-[#B45309] focus:ring-[#B45309]" /> Zone 3</label>
+        </div>
+      </div>
+      <div class="h-64"><canvas id="soil-chart"></canvas></div>
+    </section>
+
+    <!-- ESP32 Health -->
+    <section class="mt-8 glass-card p-6 rounded-2xl flex flex-wrap items-center justify-between gap-6">
+      <div class="flex items-center gap-4">
+        <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center text-primary">
+          <span class="material-symbols-outlined">memory</span>
+        </div>
+        <div>
+          <h4 class="text-body-md font-bold">ESP32-WROOM-32E</h4>
+          <p class="text-label-sm text-on-surface-variant">ID: AQ-ESP-0922</p>
+        </div>
+      </div>
+      <div class="flex gap-8">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-secondary">wifi</span>
+          <div>
+            <p class="text-[10px] text-on-surface-variant uppercase font-bold">Wi-Fi Signal</p>
+            <p id="health-rssi" class="text-body-md font-bold">-- dBm</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary">bolt</span>
+          <div>
+            <p class="text-[10px] text-on-surface-variant uppercase font-bold">Power</p>
+            <p id="health-voltage" class="text-body-md font-bold">-- V</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-on-surface-variant">schedule</span>
+          <div>
+            <p class="text-[10px] text-on-surface-variant uppercase font-bold">Uptime</p>
+            <p id="health-uptime" class="text-body-md font-bold">--</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="/js/common.js"></script>
+  <script src="/js/overview.js"></script>
+</body>
+</html>

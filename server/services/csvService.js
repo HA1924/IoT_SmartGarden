@@ -1,0 +1,78 @@
+// Sinh chuỗi CSV từ dữ liệu Telemetry.
+const { Parser } = require('json2csv');
+const { query } = require('../db');
+
+// Dựng mệnh đề WHERE + tham số dùng chung cho xuất CSV và xem trước.
+function buildFilter({ from, to, zone } = {}) {
+  const params = {};
+  const conds = [];
+  if (from) {
+    conds.push('CreatedAt >= @from');
+    params.from = new Date(from);
+  }
+  if (to) {
+    conds.push('CreatedAt <= @to');
+    params.to = new Date(to);
+  }
+  if (zone && zone >= 1 && zone <= 3) {
+    conds.push('Zone = @zone');
+    params.zone = zone;
+  }
+  const where = conds.length ? `WHERE ${conds.join(' AND ')}` : '';
+  return { where, params };
+}
+
+/**
+ * Xem trước dữ liệu sẽ xuất: tổng số dòng + N dòng gần nhất.
+ * @param {Object} opts { from, to, zone, limit }
+ */
+async function telemetryPreview({ from, to, zone, limit = 50 } = {}) {
+  const { where, params } = buildFilter({ from, to, zone });
+
+  const countResult = await query(
+    `SELECT COUNT(*) AS total FROM dbo.Telemetry ${where}`,
+    params
+  );
+  const total = countResult.recordset[0]?.total ?? 0;
+
+  const rowsResult = await query(
+    `SELECT TOP (@limit) Id, DeviceId, Zone, Temperature, AirHumidity, Light, SoilMoisture, CreatedAt
+       FROM dbo.Telemetry
+       ${where}
+       ORDER BY CreatedAt DESC`,
+    { ...params, limit: Math.min(parseInt(limit, 10) || 50, 200) }
+  );
+
+  return { total, rows: rowsResult.recordset };
+}
+
+/**
+ * Lấy dữ liệu telemetry theo khoảng thời gian / zone và trả về chuỗi CSV.
+ * @param {Object} opts { from, to, zone }
+ */
+async function telemetryCsv({ from, to, zone } = {}) {
+  const { where, params } = buildFilter({ from, to, zone });
+
+  const result = await query(
+    `SELECT Id, DeviceId, Zone, Temperature, AirHumidity, Light, SoilMoisture, CreatedAt
+       FROM dbo.Telemetry
+       ${where}
+       ORDER BY CreatedAt ASC`,
+    params
+  );
+
+  const fields = [
+    { label: 'Id', value: 'Id' },
+    { label: 'DeviceId', value: 'DeviceId' },
+    { label: 'Zone', value: 'Zone' },
+    { label: 'Temperature(C)', value: 'Temperature' },
+    { label: 'AirHumidity(%)', value: 'AirHumidity' },
+    { label: 'Light(lux)', value: 'Light' },
+    { label: 'SoilMoisture(%)', value: 'SoilMoisture' },
+    { label: 'CreatedAt(UTC)', value: 'CreatedAt' },
+  ];
+  const parser = new Parser({ fields, withBOM: true }); // BOM để Excel đọc đúng UTF-8
+  return parser.parse(result.recordset);
+}
+
+module.exports = { telemetryCsv, telemetryPreview };
