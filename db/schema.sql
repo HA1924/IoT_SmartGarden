@@ -12,14 +12,14 @@ CREATE DATABASE AquaControl
 ON 
 PRIMARY (
     NAME = AquaControl_Data,
-    FILENAME = 'D:\PROJECT\DATABASE\AquaControl_Data.mdf',  -- đường dẫn ổ cứng
+    FILENAME = 'E:\PROJECT\DB_IOT_GARDEN\AquaControl_Data.mdf',  -- đường dẫn ổ cứng
     SIZE = 50MB,                                 -- dung lượng khởi tạo
     MAXSIZE = 500MB,                             -- dung lượng tối đa
     FILEGROWTH = 10MB                            -- dung lượng tăng thêm mỗi lần
 )
 LOG ON (
     NAME = AquaControl_Log,
-    FILENAME = 'D:\PROJECT\DATABASE\AquaControl_Log.ldf',   -- đường dẫn ổ cứng cho log
+    FILENAME = 'E:\PROJECT\DB_IOT_GARDEN\AquaControl_Log.ldf',   -- đường dẫn ổ cứng cho log
     SIZE = 20MB,
     MAXSIZE = 200MB,
     FILEGROWTH = 5MB

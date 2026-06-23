@@ -177,6 +177,10 @@ Hệ thống dùng **3 camera quan sát**, mỗi cam đặt ở 1 zone. Không c
    - `ESP32CAM_STREAM_URL_3=http://<ip-cam-zone3>:81/stream`
    *(Biến cũ `ESP32CAM_STREAM_URL` vẫn dùng được, xem như camera Zone 1.)*
 7. AI-service (Python) tự kéo frame từ 3 URL để phân tích — ESP32-CAM **không** tự gọi `/api/camera/analysis`.
+8. Sketch **CameraWebServer** mặc định tự động serve **2 endpoint**:
+   - `http://<ip-cam>:81/stream` — MJPEG stream (AI-service kéo frame)
+   - `http://<ip-cam>/capture` (port 80) — ảnh tĩnh JPEG (server Node.js gọi khi admin nhấn nút **"Capture"** trên trang Camera)
+   Không cần code thêm — nạp example mặc định là đủ cho cả 2 chức năng này.
 
 > **Quan trọng (mới):** khi AI-service gửi kết quả về `POST /api/camera/analysis`, phải kèm trường
 > **`zone` (1–3)** để backend lưu đúng zone và trang Camera hiển thị theo từng camera.
