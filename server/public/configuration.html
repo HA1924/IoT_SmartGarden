@@ -15,12 +15,25 @@
   <div id="topbar-root"></div>
 
   <main class="lg:ml-[260px] pt-24 px-4 lg:px-8 pb-12">
-    <div class="mb-6">
-      <h2 class="text-title-md font-bold">Automatic Irrigation &amp; Lighting Rules</h2>
-      <p class="text-body-md text-on-surface-variant">Set thresholds for each zone. When a device is in <b>Auto</b> mode, the system uses these thresholds.</p>
+    <div class="flex flex-wrap items-start justify-between gap-4 mb-6">
+      <div>
+        <h2 class="text-title-md font-bold">Automatic Irrigation Rules</h2>
+        <p class="text-body-md text-on-surface-variant">Used when a zone is in <b>Threshold</b> mode. The decision is based on the <b>driest of the 3 pots</b>.</p>
+      </div>
+      <button id="apply-all-btn" class="flex items-center gap-2 bg-surface-container-high rounded-lg px-4 py-2.5 font-bold text-label-sm hover:bg-surface-container transition-colors">
+        <span class="material-symbols-outlined text-[18px]">content_copy</span> Copy Zone 1 to all
+      </button>
     </div>
 
-    <section id="rules-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6"></section>
+    <div class="mb-6 p-4 bg-error-container/30 border border-error/20 rounded-xl flex items-start gap-3">
+      <span class="material-symbols-outlined text-error">shield</span>
+      <p class="text-body-md text-on-surface-variant">
+        <b>Max runtime</b> is a safety cut-off: if a soil sensor fails and keeps reporting a dry value,
+        this is what stops the pump from running forever. Keep it above your longest schedule duration.
+      </p>
+    </div>
+
+    <section id="rules-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5 gap-5"></section>
   </main>
 
   <script src="/js/common.js"></script>

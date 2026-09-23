@@ -20,18 +20,20 @@
       <div class="flex items-center justify-between mb-6">
         <div>
           <h2 class="text-title-md font-bold">Sensor Status by Zone</h2>
-          <p class="text-body-md text-on-surface-variant">Latest data from the 3 monitored zones.</p>
+          <p class="text-body-md text-on-surface-variant">Latest reading from each of the 10 zones. Values below the zone threshold are shown in red.</p>
         </div>
       </div>
-      <div class="glass-card rounded-2xl overflow-hidden">
-        <table class="w-full text-body-md">
+      <div class="glass-card rounded-2xl overflow-x-auto">
+        <table class="w-full text-body-md whitespace-nowrap">
           <thead class="bg-surface-container text-on-surface-variant text-label-sm uppercase">
             <tr>
               <th class="text-left px-5 py-3">Zone</th>
               <th class="text-left px-5 py-3">Temperature</th>
               <th class="text-left px-5 py-3">Air Humidity</th>
-              <th class="text-left px-5 py-3">Light</th>
-              <th class="text-left px-5 py-3">Soil Moisture</th>
+              <th class="text-left px-5 py-3">Pot 1</th>
+              <th class="text-left px-5 py-3">Pot 2</th>
+              <th class="text-left px-5 py-3">Pot 3</th>
+              <th class="text-left px-5 py-3">Driest</th>
               <th class="text-left px-5 py-3">Updated</th>
             </tr>
           </thead>
@@ -59,10 +61,7 @@
         <div>
           <label class="text-label-sm font-semibold uppercase text-on-surface-variant">Zone</label>
           <select id="exp-zone" class="mt-1 w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-3 py-2 text-body-md focus:ring-2 focus:ring-primary outline-none">
-            <option value="0">All</option>
-            <option value="1">Zone 1</option>
-            <option value="2">Zone 2</option>
-            <option value="3">Zone 3</option>
+            <!-- danh sách zone được đổ bằng sensors.js -->
           </select>
         </div>
         <div class="grid grid-cols-2 gap-2">
@@ -89,8 +88,10 @@
                 <th class="text-left px-4 py-2.5">Zone</th>
                 <th class="text-left px-4 py-2.5">Temperature</th>
                 <th class="text-left px-4 py-2.5">Air Humidity</th>
-                <th class="text-left px-4 py-2.5">Light</th>
-                <th class="text-left px-4 py-2.5">Soil Moisture</th>
+                <th class="text-left px-4 py-2.5">Pot 1</th>
+                <th class="text-left px-4 py-2.5">Pot 2</th>
+                <th class="text-left px-4 py-2.5">Pot 3</th>
+                <th class="text-left px-4 py-2.5">Driest</th>
               </tr>
             </thead>
             <tbody id="preview-tbody" class="divide-y divide-outline-variant/30"></tbody>

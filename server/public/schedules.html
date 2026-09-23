@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Schedules | AquaControl Pro</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+  <script src="/js/theme.js"></script>
+  <link rel="stylesheet" href="/css/app.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Material+Symbols+Outlined&display=swap" rel="stylesheet" />
+  <script src="/socket.io/socket.io.js"></script>
+</head>
+<body class="bg-background text-on-surface min-h-screen" data-page="schedules" data-title="Watering Schedules">
+  <div id="sidebar-root"></div>
+  <div id="topbar-root"></div>
+
+  <main class="lg:ml-[260px] pt-24 px-4 lg:px-8 pb-12 space-y-8">
+    <div class="p-4 bg-primary/5 border border-primary/20 rounded-xl flex items-start gap-3">
+      <span class="material-symbols-outlined text-primary">info</span>
+      <p class="text-body-md text-on-surface-variant">
+        Times are in <b>Vietnam time (UTC+7)</b>. A schedule only runs when its zone is set to
+        <b>Schedule</b> mode on the <a href="/control" class="text-primary font-semibold underline">Control</a> page.
+      </p>
+    </div>
+
+    <!-- Form thêm / sửa -->
+    <section class="glass-card rounded-2xl p-6">
+      <div class="flex items-center gap-3 mb-5">
+        <span class="material-symbols-outlined text-primary">more_time</span>
+        <h2 id="form-title" class="text-title-md font-bold">Add a schedule</h2>
+      </div>
+
+      <form id="schedule-form" class="space-y-5">
+        <input type="hidden" id="sch-id" />
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label class="text-label-sm font-semibold uppercase text-on-surface-variant">Zone</label>
+            <select id="sch-zone" class="mt-1 w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-3 py-2 text-body-md focus:ring-2 focus:ring-primary outline-none"></select>
+          </div>
+          <div>
+            <label class="text-label-sm font-semibold uppercase text-on-surface-variant">Start time</label>
+            <input id="sch-time" type="time" value="06:00" class="mt-1 w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-3 py-2 text-body-md focus:ring-2 focus:ring-primary outline-none" />
+          </div>
+          <div>
+            <label class="text-label-sm font-semibold uppercase text-on-surface-variant">Duration (seconds)</label>
+            <input id="sch-duration" type="number" min="5" max="3600" step="5" value="60" class="mt-1 w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-3 py-2 text-body-md focus:ring-2 focus:ring-primary outline-none" />
+          </div>
+        </div>
+
+        <div>
+          <label class="text-label-sm font-semibold uppercase text-on-surface-variant">Repeat on</label>
+          <div id="sch-days" class="flex flex-wrap gap-2 mt-2"></div>
+          <div class="flex gap-2 mt-2">
+            <button type="button" data-preset="127" class="text-label-sm text-primary font-semibold hover:underline">Every day</button>
+            <span class="text-outline-variant">·</span>
+            <button type="button" data-preset="62" class="text-label-sm text-primary font-semibold hover:underline">Weekdays</button>
+            <span class="text-outline-variant">·</span>
+            <button type="button" data-preset="65" class="text-label-sm text-primary font-semibold hover:underline">Weekend</button>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <button type="submit" class="bg-primary text-on-primary rounded-lg px-5 py-2.5 font-bold hover:opacity-90 transition-opacity">Save schedule</button>
+          <button type="button" id="cancel-edit" class="hidden bg-surface-container-high rounded-lg px-5 py-2.5 font-bold hover:bg-surface-container transition-colors">Cancel</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Danh sách -->
+    <section>
+      <h2 class="text-title-md font-bold mb-4">Active schedules</h2>
+      <div class="glass-card rounded-2xl overflow-x-auto">
+        <table class="w-full text-body-md whitespace-nowrap">
+          <thead class="bg-surface-container text-on-surface-variant text-label-sm uppercase">
+            <tr>
+              <th class="text-left px-5 py-3">Zone</th>
+              <th class="text-left px-5 py-3">Time (UTC+7)</th>
+              <th class="text-left px-5 py-3">Duration</th>
+              <th class="text-left px-5 py-3">Repeat</th>
+              <th class="text-left px-5 py-3">Status</th>
+              <th class="text-right px-5 py-3">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="schedules-tbody" class="divide-y divide-outline-variant/30"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="/js/common.js"></script>
+  <script src="/js/schedules.js"></script>
+</body>
+</html>

@@ -5,10 +5,14 @@ const NAV_ITEMS = [
   { page: 'overview', href: '/', icon: 'dashboard', label: 'Overview' },
   { page: 'sensors', href: '/sensors', icon: 'sensors', label: 'Sensors' },
   { page: 'control', href: '/control', icon: 'toggle_on', label: 'Control' },
-  { page: 'camera', href: '/camera', icon: 'videocam', label: 'Camera' },
+  { page: 'schedules', href: '/schedules', icon: 'schedule', label: 'Schedules' },
   { page: 'logs', href: '/logs', icon: 'history', label: 'Logs' },
   { page: 'configuration', href: '/configuration', icon: 'settings_input_component', label: 'Configuration' },
 ];
+
+// Số zone của hệ thống - dùng chung cho mọi trang
+const ZONE_COUNT = 10;
+const ZONES = Array.from({ length: ZONE_COUNT }, (_, i) => i + 1);
 
 function buildSidebar(active) {
   const links = NAV_ITEMS.map((it) => {
@@ -165,10 +169,38 @@ function initLayout() {
       const rssi = document.getElementById('wifi-rssi');
       if (rssi && snap.rssi != null) rssi.textContent = `${snap.rssi} dBm`;
     });
+    socket.on('device', refreshSystemStatus);
     window.appSocket = socket;
+  }
+
+  refreshSystemStatus();
+}
+
+// Chip "System" ở sidebar: đếm số node đang online thật, thay vì chữ cố định.
+async function refreshSystemStatus() {
+  const el = document.getElementById('system-status');
+  if (!el) return;
+  try {
+    const { devices } = await api('/api/devices');
+    const online = devices.filter((d) => d.IsOnline).length;
+    const total = devices.length;
+    const allDown = online === 0;
+    const partial = online > 0 && online < total;
+
+    const tone = allDown
+      ? 'bg-error-container text-on-error-container'
+      : partial
+        ? 'bg-[#F59E0B]/20 text-[#B45309]'
+        : 'bg-secondary-container text-on-secondary-container';
+    const dot = allDown ? 'bg-error' : partial ? 'bg-[#B45309]' : 'bg-secondary';
+
+    el.className = `inline-flex items-center gap-2 px-2 py-1 rounded-full ${tone} text-[10px] font-bold uppercase tracking-wider`;
+    el.innerHTML = `<span class="w-2 h-2 ${dot} rounded-full ${allDown ? '' : 'animate-pulse'}"></span> Nodes: ${online}/${total} online`;
+  } catch (e) {
+    /* chưa đăng nhập hoặc DB chưa sẵn sàng - giữ nguyên chip */
   }
 }
 
 document.addEventListener('DOMContentLoaded', initLayout);
 
-window.AC = { api, toast };
+window.AC = { api, toast, ZONE_COUNT, ZONES, refreshSystemStatus };

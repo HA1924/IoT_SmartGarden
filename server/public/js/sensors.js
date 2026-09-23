@@ -1,10 +1,21 @@
-// Trang Sensors: bảng dữ liệu mới nhất theo zone + xuất CSV.
+// Trang Sensors: bảng dữ liệu mới nhất 10 zone × 3 chậu + xuất CSV.
 (function () {
-  const { api, toast } = window.AC;
+  const { api, toast, ZONES } = window.AC;
   const latest = {};
+  const rules = {};
 
   function fmt(v, u = '') {
     return v == null ? '<span class="text-on-surface-variant">--</span>' : `${v}${u}`;
+  }
+
+  function threshold(zone) {
+    return rules[zone]?.SoilThreshold ?? 30;
+  }
+
+  function soilCell(v, zone) {
+    if (v == null) return '<span class="text-on-surface-variant">--</span>';
+    const dry = v < threshold(zone);
+    return `<span class="${dry ? 'text-error font-bold' : ''}">${Math.round(v)}%</span>`;
   }
 
   function timeAgo(ts) {
@@ -14,20 +25,19 @@
 
   function render() {
     const tbody = document.getElementById('sensor-tbody');
-    tbody.innerHTML = [1, 2, 3]
-      .map((z) => {
-        const d = latest[z] || {};
-        const low = d.SoilMoisture != null && d.SoilMoisture < 30;
-        return `<tr class="hover:bg-surface-container-low/50">
+    tbody.innerHTML = ZONES.map((z) => {
+      const d = latest[z] || {};
+      return `<tr class="hover:bg-surface-container-low/50">
         <td class="px-5 py-3 font-bold text-primary">Zone ${z}</td>
         <td class="px-5 py-3">${fmt(d.Temperature, '°C')}</td>
         <td class="px-5 py-3">${fmt(d.AirHumidity, '%')}</td>
-        <td class="px-5 py-3">${fmt(d.Light, ' lx')}</td>
-        <td class="px-5 py-3 font-bold ${low ? 'text-error' : ''}">${fmt(d.SoilMoisture, '%')}</td>
+        <td class="px-5 py-3">${soilCell(d.Soil1, z)}</td>
+        <td class="px-5 py-3">${soilCell(d.Soil2, z)}</td>
+        <td class="px-5 py-3">${soilCell(d.Soil3, z)}</td>
+        <td class="px-5 py-3 font-bold">${soilCell(d.SoilMin, z)}</td>
         <td class="px-5 py-3 text-label-sm text-on-surface-variant">${timeAgo(d.CreatedAt)}</td>
       </tr>`;
-      })
-      .join('');
+    }).join('');
   }
 
   function exportParams() {
@@ -49,14 +59,15 @@
 
   function previewRow(r) {
     const time = r.CreatedAt ? new Date(r.CreatedAt).toLocaleString('vi-VN') : '--';
-    const low = r.SoilMoisture != null && r.SoilMoisture < 30;
     return `<tr class="hover:bg-surface-container-low/50">
       <td class="px-4 py-2 text-on-surface-variant">${time}</td>
       <td class="px-4 py-2 font-bold text-primary">Zone ${r.Zone}</td>
       <td class="px-4 py-2">${fmt(r.Temperature, '°C')}</td>
       <td class="px-4 py-2">${fmt(r.AirHumidity, '%')}</td>
-      <td class="px-4 py-2">${fmt(r.Light, ' lx')}</td>
-      <td class="px-4 py-2 font-bold ${low ? 'text-error' : ''}">${fmt(r.SoilMoisture, '%')}</td>
+      <td class="px-4 py-2">${soilCell(r.Soil1, r.Zone)}</td>
+      <td class="px-4 py-2">${soilCell(r.Soil2, r.Zone)}</td>
+      <td class="px-4 py-2">${soilCell(r.Soil3, r.Zone)}</td>
+      <td class="px-4 py-2 font-bold">${soilCell(r.SoilMin, r.Zone)}</td>
     </tr>`;
   }
 
@@ -65,11 +76,11 @@
     const tbody = document.getElementById('preview-tbody');
     const summary = document.getElementById('preview-summary');
     wrap.classList.remove('hidden');
-    tbody.innerHTML = '<tr><td colspan="6" class="px-4 py-6 text-center text-on-surface-variant">Loading...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8" class="px-4 py-6 text-center text-on-surface-variant">Loading...</td></tr>';
     try {
       const { total, rows } = await api(`/api/export/preview?${exportParams().toString()}`);
       if (!rows.length) {
-        tbody.innerHTML = '<tr><td colspan="6" class="px-4 py-6 text-center text-on-surface-variant">No data matches the filter.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" class="px-4 py-6 text-center text-on-surface-variant">No data matches the filter.</td></tr>';
         summary.textContent = '0 rows';
         return;
       }
@@ -78,29 +89,34 @@
         ? `Total ${total} rows — showing latest ${rows.length}`
         : `${total} rows will be exported`;
     } catch (e) {
-      tbody.innerHTML = `<tr><td colspan="6" class="px-4 py-6 text-center text-error">Error: ${e.message}</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="8" class="px-4 py-6 text-center text-error">Error: ${e.message}</td></tr>`;
       summary.textContent = '';
     }
   }
 
   async function init() {
-    try {
-      const { zones } = await api('/api/telemetry/latest');
-      for (const r of zones) latest[r.Zone] = r;
-    } catch (e) { /* trống */ }
+    document.getElementById('exp-zone').innerHTML =
+      '<option value="0">All zones</option>' +
+      ZONES.map((z) => `<option value="${z}">Zone ${z}</option>`).join('');
+
+    const [data, ruleList] = await Promise.all([
+      api('/api/telemetry/latest').catch(() => ({ zones: [] })),
+      api('/api/rules').catch(() => ({ rules: [] })),
+    ]);
+    for (const r of data.zones) latest[r.Zone] = r;
+    for (const r of ruleList.rules) rules[r.Zone] = r;
     render();
 
     document.getElementById('exp-btn').addEventListener('click', doExport);
     document.getElementById('preview-btn').addEventListener('click', doPreview);
 
     if (window.appSocket) {
-      window.appSocket.on('telemetry', (snap) => {
-        for (const z of snap.zones || []) {
-          latest[z.zone] = {
-            Zone: z.zone, Temperature: z.temperature, AirHumidity: z.airHumidity,
-            Light: z.light, SoilMoisture: z.soilMoisture, CreatedAt: snap.receivedAt,
-          };
-        }
+      window.appSocket.on('telemetry', (t) => {
+        latest[t.zone] = {
+          Zone: t.zone, Temperature: t.temperature, AirHumidity: t.airHumidity,
+          Soil1: t.soil1, Soil2: t.soil2, Soil3: t.soil3, SoilMin: t.soilMin,
+          CreatedAt: t.receivedAt,
+        };
         render();
       });
     }
