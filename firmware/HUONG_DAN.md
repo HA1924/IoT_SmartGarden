@@ -1,159 +1,148 @@
-# Hướng dẫn: Nạp firmware Arduino + Chạy AI-service
+# Hướng dẫn nạp firmware cho 10 node ESP32
+
+Mỗi zone có 1 ESP32 riêng, cả 10 con **nạp chung một file** `zone-node/zone-node.ino`,
+chỉ khác 2 dòng cấu hình. Không có thiết bị master.
 
 ---
 
-## PHẦN 1 — Nạp firmware lên ESP32 bằng Arduino IDE
+## PHẦN 1 — Chuẩn bị Arduino IDE
 
 ### Bước 1: Cài Arduino IDE 2.x
-Tải tại: https://www.arduino.cc/en/software (chọn **Windows Installer**)
+Tải tại https://www.arduino.cc/en/software (chọn **Windows Installer**).
 
 ### Bước 2: Thêm board ESP32
-1. Mở Arduino IDE → **File → Preferences**
-2. Ở ô *Additional boards manager URLs*, dán vào:
+1. **File → Preferences** → ô *Additional boards manager URLs*, dán:
    ```
    https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
    ```
-3. **Tools → Board → Boards Manager** → tìm `esp32` → cài **esp32 by Espressif Systems**
-   *(mất vài phút, khoảng 200MB)*
+2. **Tools → Board → Boards Manager** → tìm `esp32` → cài **esp32 by Espressif Systems**
+   (mất vài phút, khoảng 200MB).
 
 ### Bước 3: Cài thư viện
-Vào **Tools → Manage Libraries**, tìm và cài lần lượt:
+**Tools → Manage Libraries**, tìm và cài:
 
-| Tìm kiếm | Tên thư viện cần cài |
+| Tìm kiếm | Thư viện |
 |---|---|
 | `DHT sensor library` | **DHT sensor library** by Adafruit |
 | `Adafruit Unified Sensor` | **Adafruit Unified Sensor** by Adafruit |
-| `ArduinoJson` | **ArduinoJson** by Benoit Blanchon |
+| `ArduinoJson` | **ArduinoJson** by Benoit Blanchon (bản 7.x) |
 
-### Bước 4: Mở file .ino và sửa cấu hình
-Mở file `AquaControl_Controller.ino`, sửa **3 dòng** ở đầu file:
+`WiFi`, `HTTPClient`, `Preferences` đã có sẵn trong core ESP32.
+
+---
+
+## PHẦN 2 — Đấu nối 1 node
+
+| Chức năng | GPIO | Ghi chú |
+|---|---|---|
+| Cảm biến đất chậu 1 | **32** | ADC1 |
+| Cảm biến đất chậu 2 | **33** | ADC1 |
+| Cảm biến đất chậu 3 | **34** | ADC1, input-only |
+| DHT22 DATA | **4** | cần điện trở kéo 10kΩ lên 3V3 |
+| Relay bơm | **25** | output, active-LOW |
+
+**Quy tắc bắt buộc**
+- Khi WiFi bật, analog **chỉ đọc được trên ADC1 = GPIO 32–39**. Dùng ADC2 sẽ ra số rác.
+- GPIO 34–39 là input-only, không có pull-up nội — chỉ dùng cho cảm biến đọc vào.
+- Tránh chân strapping: 0, 2, 12, 15.
+- **Nguồn cho bơm phải lấy riêng**, không lấy từ chân 5V của ESP32 — dòng khởi động của
+  bơm sẽ làm ESP32 reset liên tục.
+- Nối chung GND giữa nguồn bơm và ESP32.
+
+---
+
+## PHẦN 3 — Cấu hình từng node
+
+Mở `firmware/zone-node/zone-node.ino`, sửa phần đầu file:
 
 ```cpp
-#define WIFI_SSID    "TEN_WIFI_CUA_BAN"         // ← đổi thành tên WiFi thật
-#define WIFI_PASS    "MAT_KHAU_WIFI"             // ← đổi thành mật khẩu WiFi
-#define SERVER_BASE  "http://192.168.x.x:3000"   // ← đổi thành IP máy tính (xem bên dưới)
+#define ZONE_ID      1                              // ← 1..10, mỗi node một số khác nhau
+#define API_KEY      "aqcp-z01-3f7a9c2e5b1d"        // ← key riêng của node này
+
+#define WIFI_SSID    "TEN_WIFI"
+#define WIFI_PASS    "MAT_KHAU_WIFI"
+#define SERVER_BASE  "http://192.168.1.50:3000"     // ← IP máy chủ
 ```
 
-**Cách lấy IP máy tính để điền vào SERVER_BASE:**
-1. Mở PowerShell → gõ lệnh:
-   ```
-   ipconfig
-   ```
-2. Tìm dòng **IPv4 Address** dưới adapter WiFi đang dùng, ví dụ: `192.168.1.50`
-3. Điền vào: `"http://192.168.1.50:3000"`
-
-> ⚠️ **KHÔNG dùng `localhost` hay `127.0.0.1`** — ESP32 sẽ tự hiểu là địa chỉ của chính nó, không phải máy tính.
-
-`API_KEY` đã đặt sẵn là `aqcp-device-key-2026` (khớp với file `.env` của server, **không cần đổi**).
-
-### Bước 5: Chọn board và cổng COM
-- **Tools → Board → esp32 → ESP32 Dev Module**
-- Cắm ESP32 vào máy tính bằng cáp USB (cáp có dây data, không phải cáp sạc)
-- **Tools → Port** → chọn cổng COM xuất hiện (ví dụ `COM3`, `COM4`)
-
-> Nếu không thấy cổng COM: cài driver chip USB-Serial trên board.
-> Thường là **CP2102** (tải tại silabs.com) hoặc **CH340** (tải tại wch.cn).
-
-### Bước 6: Nạp code
-- Bấm nút **Upload** (biểu tượng →) hoặc nhấn `Ctrl+U`
-- Chờ compile + nạp (~30–60 giây), thanh tiến trình hiện ở dưới
-- Sau khi xong: **Tools → Serial Monitor**, đặt baud **115200**
-- Thấy dòng sau là thành công:
-  ```
-  [WiFi] Connected: 192.168.1.xxx
-  [Telemetry] 200 OK | soil=...% light=...lx T=...C H=...%
-  [Commands] pump1=0 pump2=0 pump3=0 led=0
-  ```
-
-### Bước 7: Cho phép ESP32 kết nối vào server
-
-**Sửa file `.env`** ở thư mục gốc project, đổi dòng HOST:
-```env
-HOST=0.0.0.0
+**API key lấy ở đâu**: mỗi node có key riêng, nằm ở cột `ApiKey` bảng `Devices`.
+Xem phần seed ở cuối `db/schema.sql`, hoặc chạy trong SSMS:
+```sql
+SELECT DeviceId, Zone, ApiKey FROM dbo.Devices ORDER BY Zone;
 ```
-*(Mặc định `127.0.0.1` chỉ cho máy tính tự kết nối, `0.0.0.0` mở cho cả mạng LAN)*
+Node dùng key của zone khác sẽ bị server từ chối — đó là chủ ý, để phát hiện nạp nhầm firmware.
 
-**Mở firewall Windows cho port 3000:**
-1. Tìm kiếm "Windows Defender Firewall with Advanced Security"
-2. **Inbound Rules → New Rule**
-3. Chọn **Port** → **TCP** → điền `3000` → **Allow the connection** → đặt tên tùy ý → Finish
+**Lấy IP máy chủ**: mở PowerShell trên máy chạy server, gõ `ipconfig`, lấy dòng *IPv4 Address*.
+Không dùng `localhost` vì với ESP32 thì localhost là chính nó.
+
+**Nếu server chạy HTTPS** (có domain, qua Cloudflare Tunnel...): `HTTPClient` thường sẽ lỗi `-1`.
+Phải đổi sang `WiFiClientSecure` + `client.setInsecure()`, hoặc để ESP32 gọi thẳng IP nội bộ
+qua HTTP còn trình duyệt mới đi qua domain HTTPS.
 
 ---
 
-## PHẦN 2 — Chạy AI-service (Python/OpenCV)
+## PHẦN 4 — Nạp và kiểm tra
 
-### Bước 1: Mở terminal trong thư mục ai-service
-```powershell
-cd "e:\PROJECT\IoT_SmartGarden\ai-service"
+1. **Tools → Board** → *ESP32 Dev Module*, chọn đúng **Port**.
+2. Bấm **Upload**.
+3. Mở **Serial Monitor**, tốc độ **115200**.
+
+Node chạy đúng sẽ in:
+```
+[Boot] AquaControl Pro - Node Zone 1 (fw 2.0.0)
+[NVS] Nguong da nho: 30.0% (hys 15.0%, maxrun 5 phut)
+[WiFi] Connected: 192.168.1.101
+[Telemetry] 200 OK | soil=45/52/38% T=28.4C H=62%
 ```
 
-### Bước 2: Tạo môi trường ảo — chỉ làm 1 lần
-```powershell
-python -m venv venv
-```
-
-### Bước 3: Kích hoạt venv
-```powershell
-venv\Scripts\activate
-```
-Dấu nhắc sẽ hiện `(venv)` ở đầu dòng — phải thấy dấu này trước khi tiếp tục.
-
-### Bước 4: Cài thư viện — chỉ làm 1 lần
-```powershell
-pip install -r requirements.txt
-```
-*(Cài opencv, flask, numpy, requests — mất vài phút)*
-
-### Bước 5: Đặt URL stream camera rồi chạy
-
-Sau khi nạp sketch **CameraWebServer** lên ESP32-CAM, mở Serial Monitor lấy IP của từng camera.
-Sau đó chạy AI-service với lệnh sau trong PowerShell:
-
-```powershell
-# Thay IP thật của từng ESP32-CAM vào đây
-$env:PULL_STREAM_URL_1 = "http://192.168.x.x:81/stream"   # Zone 1
-$env:PULL_STREAM_URL_2 = "http://192.168.x.y:81/stream"   # Zone 2
-$env:PULL_STREAM_URL_3 = "http://192.168.x.z:81/stream"   # Zone 3
-
-# Hai dòng dưới không cần đổi nếu server chạy trên cùng máy
-$env:DEVICE_API_KEY = "aqcp-device-key-2026"
-$env:NODE_URL       = "http://localhost:3000"
-
-python app.py
-```
-
-**Nếu chỉ có 1 camera (zone 1):**
-```powershell
-$env:PULL_STREAM_URL_1 = "http://192.168.x.x:81/stream"
-$env:DEVICE_API_KEY   = "aqcp-device-key-2026"
-$env:NODE_URL         = "http://localhost:3000"
-python app.py
-```
-
-Log khi chạy thành công:
-```
-[ai] Zone 1: tự kéo stream http://192.168.x.x:81/stream mỗi 10s
- * Running on http://0.0.0.0:5001
-```
-
-### Bước 6: Cập nhật URL vào .env server
-Sau khi có IP thật của các ESP32-CAM, mở file `.env` ở **thư mục gốc project** và sửa:
-```env
-ESP32CAM_STREAM_URL_1=http://<ip-cam-zone1>:81/stream
-ESP32CAM_STREAM_URL_2=http://<ip-cam-zone2>:81/stream
-ESP32CAM_STREAM_URL_3=http://<ip-cam-zone3>:81/stream
-```
-Các URL này dùng để hiển thị **live stream** trực tiếp trên trang Camera của dashboard.
+Gặp `LOI HTTP 401` → sai `API_KEY`.
+Gặp `LOI HTTP -1` → sai IP/cổng, hoặc firewall máy chủ chưa mở cổng 3000, hoặc đang gọi HTTPS.
 
 ---
 
-## Thứ tự khởi động mỗi lần dùng
+## PHẦN 5 — Hiệu chỉnh cảm biến độ ẩm đất
 
-| Bước | Lệnh | Terminal |
+Giá trị mặc định trong code chỉ là ước lượng, **phải đo lại theo cảm biến thật**:
+
+1. Nạp firmware, mở Serial Monitor.
+2. Để cảm biến **khô ngoài không khí** → ghi lại số ADC.
+3. **Nhúng vào nước** (chỉ ngập phần cảm biến, không ngập mạch) → ghi lại số ADC.
+4. Điền vào đầu file:
+   ```cpp
+   #define SOIL_RAW_DRY  3200   // số đo khi khô
+   #define SOIL_RAW_WET  1500   // số đo khi ngập nước
+   ```
+5. Nạp lại. Kiểm tra: khô phải ra ~0%, ngập nước ra ~100%.
+
+Không hiệu chỉnh thì ngưỡng 30% trên web sẽ không tương ứng với độ ẩm thật.
+
+---
+
+## PHẦN 6 — Ba cơ chế an toàn (đừng gỡ khi sửa code)
+
+| Cơ chế | Cách hoạt động | Bảo vệ khỏi |
 |---|---|---|
-| 1 | `npm run dev` | Terminal 1 (thư mục gốc project) |
-| 2 | Activate venv + set env + `python app.py` | Terminal 2 (thư mục `ai-service/`) |
-| 3 | Bật ESP32 Controller | — |
-| 4 | Mở `http://localhost:3000` → đăng nhập `admin / admin123` | Trình duyệt |
+| **Tự đếm ngược** | Server gửi `remainingSec`, node tự đếm và tự tắt | Mất mạng giữa lúc đang tưới |
+| **Cắt quá giờ** | Bơm chạy quá `MaxRunMinutes` là cắt, không cần lệnh | Server treo, lệnh kẹt, relay dính |
+| **Failsafe mất server** | Quá 3 phút không liên lạc được → tắt bơm | Server chết trong lúc bơm đang chạy |
 
-> Phải chạy Node server **trước** AI-service và ESP32, vì cả hai đều kết nối vào server.
+Ngoài ra node nhớ ngưỡng vào NVS: mất mạng mà zone đang ở chế độ ngưỡng thì vẫn tự tưới
+từng đợt 60 giây, để cây không chết trong lúc mạng hỏng.
+
+---
+
+## PHẦN 7 — Nạp cho 10 node
+
+Làm lần lượt từng con, mỗi lần chỉ đổi **2 dòng** `ZONE_ID` và `API_KEY`:
+
+| Node | ZONE_ID | DeviceId | Key lấy từ |
+|---|---|---|---|
+| 1 | 1 | AQ-ZONE-01 | `SELECT ApiKey FROM Devices WHERE Zone=1` |
+| 2 | 2 | AQ-ZONE-02 | ... |
+| ... | ... | ... | ... |
+| 10 | 10 | AQ-ZONE-10 | ... |
+
+**Mẹo**: dán nhãn số zone lên vỏ từng node ngay sau khi nạp. Sau này gỡ ra sửa mà không
+biết con nào là zone mấy sẽ rất mất thời gian.
+
+**Gợi ý**: đặt DHCP Reservation trên router cho từng node để IP không đổi sau khi mất điện —
+tiện khi cần kiểm tra hoặc làm OTA về sau.

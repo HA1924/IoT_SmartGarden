@@ -1,111 +1,118 @@
 # AquaControl Pro — Web Dashboard Vườn Tưới Thông Minh ESP32
 
-Hệ thống giám sát & điều khiển nhà kính tưới tự động dùng ESP32:
-- **3 khu (Zone 1/2/3)**: mỗi khu có cảm biến độ ẩm đất + 1 máy bơm.
-- **DHT22** (nhiệt độ + độ ẩm KK), **cảm biến ánh sáng** + **dải đèn LED**.
-- **3 ESP32-Cam** (mỗi zone 1 camera): đo kích thước tán lá + phát hiện sâu bệnh (AI/OpenCV).
+Hệ thống giám sát & điều khiển nhà kính tưới tự động, quy mô **10 zone**:
+- **Mỗi zone**: 1 ESP32 riêng + 1 DHT22 + **3 cảm biến độ ẩm đất (3 chậu)** + 1 relay + 1 bơm.
+- Bơm tưới chung cho cả 3 chậu → hệ thống quyết định tưới theo **chậu khô nhất**.
+- **10 node độc lập, không có master** — mỗi con tự gửi dữ liệu và tự điều khiển zone của mình.
 - Dashboard có **đăng nhập admin**, dữ liệu **realtime**, **xuất CSV**, giao diện **responsive**.
 
+### 3 chế độ tưới (mỗi zone chọn 1)
+| Chế độ | Cách hoạt động |
+|---|---|
+| **Threshold** | Tưới khi chậu khô nhất xuống dưới ngưỡng của zone |
+| **Schedule** | Tưới theo lịch hẹn giờ (giờ Việt Nam, chọn thứ trong tuần) |
+| **Manual** | Chỉ tưới khi admin bấm nút |
+
+Nút **Water 60s** dùng được ở mọi chế độ: tưới ngay rồi zone tự quay lại chế độ cũ,
+không cần đổi mode qua lại.
+
 ### Tính năng dashboard
-- **Overview**: thẻ 3 zone realtime, biểu đồ nhiệt độ/độ ẩm KK, **biểu đồ độ ẩm đất theo zone** (chọn Zone 1/2/3), sức khoẻ ESP32.
-- **Sensors**: bảng số liệu mới nhất + **xem trước dữ liệu** trước khi xuất CSV (theo bộ lọc thời gian/zone).
-- **Control**: bật/tắt 3 bơm + đèn, chế độ auto/manual.
-- **Camera**: chọn **zone (3 camera)** → stream + **nút chụp ảnh** + kết quả AI + lịch sử (có thumbnail) tương ứng từng zone.
-- **Logs**: lọc theo mức, **phân trang**, **xoá toàn bộ nhật ký**.
-- **Configuration**: chỉnh luật tưới/đèn theo zone.
+- **Overview**: 10 zone trên cùng một màn hình — 3 chậu mỗi zone, trạng thái bơm kèm đếm ngược,
+  nút tưới nhanh, 4 ô tổng quan (node online, bơm đang chạy, zone thiếu nước, nhiệt độ TB).
+- **Sensors**: bảng 10 zone × 3 chậu + xem trước dữ liệu trước khi xuất CSV.
+- **Control**: 10 thẻ bơm, đổi chế độ, tưới tay 30/60/120 giây, nút dừng.
+- **Schedules**: thêm/sửa/xoá lịch tưới theo zone, giờ và thứ trong tuần.
+- **Configuration**: ngưỡng độ ẩm, hysteresis, thời gian chạy tối đa, thời gian nghỉ tối thiểu.
+- **Logs**: lọc theo mức, phân trang, xoá toàn bộ nhật ký.
+
+### Ba lớp an toàn cho bơm
+1. **Giới hạn thời gian chạy** (`MaxRunMinutes`) — cảm biến hỏng đọc mãi giá trị khô thì bơm vẫn bị cắt.
+2. **Node tự đếm ngược** — mất mạng giữa lúc đang tưới, bơm vẫn tắt đúng giờ.
+3. **Failsafe mất server** — node không liên lạc được server quá 3 phút thì tự tắt bơm.
 
 ## Công nghệ
 | Lớp | Công nghệ |
 |-----|-----------|
 | Backend | Node.js + Express + Socket.IO |
 | Database | SQL Server (driver `mssql`) |
-| Auth | express-session + bcrypt |
+| Auth | express-session + bcrypt (web) · API key riêng từng node (thiết bị) |
 | Frontend | HTML/CSS/JS + Tailwind (CDN) + Chart.js |
-| AI camera | Python + Flask + OpenCV (microservice riêng) |
-| Firmware | ESP32 / ESP32-Cam (Arduino) — giao tiếp HTTP REST |
+| Firmware | ESP32 (Arduino) — giao tiếp HTTP REST |
 
 ## Cấu trúc thư mục
 ```
-server/        Backend Node (routes, services, public/ = front-end)
-ai-service/    Microservice Python phân tích camera
-firmware/      Code mẫu ESP32 + ESP32-Cam
-db/schema.sql  Tạo database + bảng (chạy bằng SSMS)
-stitch-export/ Thiết kế gốc (tham chiếu)
+server/               Backend Node (routes, services, public/ = front-end)
+firmware/zone-node/   Firmware ESP32, nạp chung cho cả 10 node
+db/schema.sql         Tạo database + 8 bảng + seed 10 zone (chạy bằng SSMS)
+stitch-export/        Thiết kế gốc (tham chiếu)
+PLAN_V2.md            Kế hoạch nâng cấp 10 zone + các quyết định đã chốt
 ```
 
 ## Cài đặt & chạy
 
 ### 1) Database (SQL Server)
-- Mở **SSMS**, mở `db/schema.sql`, bấm **Execute (F5)**.
-  → Tạo database `AquaControl` + 7 bảng + seed (bơm/đèn/luật/thiết bị).
-- *(Nếu dùng đường dẫn file .mdf/.ldf tùy chỉnh: tạo sẵn thư mục đích trước khi chạy.)*
-- **Đã có DB cũ và muốn cập nhật mà không mất dữ liệu?** Chạy `db/migration_camera_zone.sql`
-  trong SSMS để thêm cột `Zone` cho bảng `CameraAnalysis` (3 camera/zone). **Đừng** chạy lại
-  `schema.sql` vì nó sẽ DROP toàn bộ bảng.
+Mở **SSMS** → mở `db/schema.sql` → **Execute (F5)**.
+Tạo database `AquaControl` + 8 bảng + seed sẵn 10 zone.
+
+> File này **DROP toàn bộ bảng cũ** rồi tạo lại. Có dữ liệu cần giữ thì backup trước.
+> Không chỉ định đường dẫn file `.mdf` nên chạy được trên mọi máy; muốn đặt ổ riêng thì
+> bỏ chú thích khối `CREATE DATABASE ... ON PRIMARY` ở đầu file.
 
 ### 2) Backend Node
 ```bash
-cp .env.example .env       # rồi sửa thông tin DB, mật khẩu...
+cp .env.example .env       # rồi sửa thông tin DB
 npm install
 npm run seed               # tạo admin mặc định: admin / admin123
 npm run dev                # chạy với nodemon (hoặc: npm start)
 ```
 Mở http://localhost:3000 → đăng nhập `admin` / `admin123`.
 
-### 3) Giả lập ESP32 (test khi chưa có phần cứng)
+### 3) Giả lập 10 node (test khi chưa có phần cứng)
 ```bash
-npm run simulate           # đẩy dữ liệu 3 zone mỗi 5s
+npm run simulate                 # 10 node, chu kỳ 30s như thật
+npm run simulate -- --fast       # chu kỳ 3s, xem kết quả nhanh khi dev
+npm run simulate -- --dry 3      # ép zone 3 khô dần: test tưới tự động + cắt an toàn
 ```
-→ Mở dashboard sẽ thấy số liệu cập nhật realtime, bơm tự bật khi soil < ngưỡng.
 
-### 4) AI-service (tuỳ chọn, cho phần camera)
-```bash
-cd ai-service
-python -m venv venv && venv\Scripts\activate     # Windows
-pip install -r requirements.txt
-set NODE_URL=http://localhost:3000
-set DEVICE_API_KEY=esp32-secret-key-doi-di
-python app.py              # chạy cổng 5001
+### 4) Firmware ESP32
+Xem `firmware/HUONG_DAN.md`. Cả 10 node nạp chung file `firmware/zone-node/zone-node.ino`,
+mỗi con chỉ đổi `ZONE_ID` và `API_KEY`.
+
+Lấy API key của từng node:
+```sql
+SELECT DeviceId, Zone, ApiKey FROM dbo.Devices ORDER BY Zone;
 ```
-Gửi thử 1 ảnh: `POST http://localhost:5001/analyze` (multipart field `image`).
-
-### 5) Firmware ESP32
-- `firmware/esp32_sensors/` : cảm biến + 3 bơm + đèn (sửa WiFi, `serverUrl`, `API_KEY`).
-- `firmware/esp32cam/`      : ESP32-Cam (sửa WiFi, `aiServiceUrl`).
 
 ## API chính
 | Method | Route | Mô tả | Bảo vệ |
 |--------|-------|-------|--------|
 | POST | `/login` `/logout` | Đăng nhập/xuất | session |
-| POST | `/api/telemetry` | ESP32 đẩy dữ liệu 3 zone | x-api-key |
-| GET | `/api/commands` | ESP32 poll lệnh bơm/đèn | x-api-key |
-| POST | `/api/control` | Bật/tắt bơm/đèn, auto/manual | session |
+| POST | `/api/telemetry` | Node đẩy dữ liệu 1 zone | x-api-key |
+| GET | `/api/commands?zone=N` | Node poll lệnh bơm + ngưỡng | x-api-key |
+| GET/POST | `/api/control` | Trạng thái 10 bơm / đổi chế độ | session |
+| POST | `/api/control/water` | Tưới tay `{zone, durationSec}` | session |
+| POST | `/api/control/stop` | Dừng bơm | session |
 | GET | `/api/telemetry/latest` `/history` | Số liệu dashboard | session |
-| POST | `/api/camera/analysis` | AI-service gửi kết quả (kèm `zone`) | x-api-key |
-| POST | `/api/camera/capture` | Admin chụp ảnh tĩnh từ ESP32-Cam theo `?zone=` (1–3) | session |
-| GET | `/api/camera/latest` `/history` | Dữ liệu camera theo `?zone=` (1–3) | session |
-| GET | `/api/export/preview` | Xem trước dữ liệu sẽ xuất (từ/đến/zone) | session |
-| GET | `/api/export/csv` | Tải CSV | session |
-| GET/PUT | `/api/rules` | Luật tự động | session |
-| GET | `/api/logs` | Nhật ký | session |
-| DELETE | `/api/logs` | Xoá toàn bộ nhật ký | session |
+| GET | `/api/devices` | Trạng thái online 10 node | session |
+| GET/POST/PUT/DELETE | `/api/schedules` | Lịch tưới | session |
+| GET/PUT | `/api/rules` `/api/rules/:zone` | Ngưỡng + chặn an toàn | session |
+| GET | `/api/stats/watering` `/runs` | Thống kê lượt tưới | session |
+| GET | `/api/export/preview` `/csv` | Xem trước & tải CSV | session |
+| GET/DELETE | `/api/logs` | Nhật ký | session |
 
-## Triển khai lên IP tĩnh
+## Triển khai
 Chỉ cần sửa `.env` và firmware, **không sửa code**:
-- `.env`: `HOST=0.0.0.0`, `PUBLIC_URL=http://<ip-tinh>:3000`, đổi `SESSION_SECRET` & `DEVICE_API_KEY`.
-- Firmware ESP32: đổi `serverUrl` / `aiServiceUrl` sang IP tĩnh.
-- Mạng: NAT/port-forward cổng 3000 (và 5001 nếu AI ở máy khác). Khuyến nghị đặt Nginx + HTTPS phía trước.
+- `.env`: `HOST=0.0.0.0`, `PUBLIC_URL=http://<ip-hoặc-domain>`, đổi `SESSION_SECRET`,
+  bật `COOKIE_SECURE=true` khi đã có HTTPS.
+- Firmware: đổi `SERVER_BASE` sang IP/domain máy chủ.
+- Mạng: mở cổng 3000, hoặc đặt reverse proxy + HTTPS phía trước.
 
 ## Ghi chú
-- **Camera 3 zone**: đặt 3 stream trong `.env` — `ESP32CAM_STREAM_URL_1/2/3` (ứng với Zone 1/2/3).
-  Biến cũ `ESP32CAM_STREAM_URL` vẫn dùng được, xem như camera Zone 1.
-  Để dữ liệu AI tách đúng zone, AI-service cần gửi kèm `zone` trong `POST /api/camera/analysis`
-  (mặc định `zone=1` nếu không gửi).
-- **Chụp ảnh (capture)**: nút *Chụp ảnh* trên trang Camera gọi `POST /api/camera/capture?zone=N`,
-  server tải ảnh tĩnh từ `http://<ip-cam>/capture` (port 80) → lưu vào `server/public/captures/`
-  → ghi `CameraAnalysis.ImagePath` + realtime. URL chụp tự suy ra từ stream, hoặc override bằng
-  `ESP32CAM_CAPTURE_URL_1/2/3`. Test nhanh không cần phần cứng: trỏ biến này tới một URL trả JPEG
-  bất kỳ (vd `https://picsum.photos/640/480`). Thư mục `captures/` đã được `.gitignore`.
-- Phát hiện sâu bệnh hiện dùng heuristic OpenCV (đốm màu bất thường) — nâng cấp bằng model học máy khi có dữ liệu ảnh thực.
-- Hệ số `PIXELS_PER_CM` trong `ai-service/detector.py` cần hiệu chỉnh theo khoảng cách lắp camera.
+- Dữ liệu cảm biến được **giữ vĩnh viễn** (không có job xoá). Biểu đồ luôn gom nhóm bằng SQL
+  trước khi trả về nên vẫn nhanh khi bảng lớn dần.
+- Lịch tưới tính theo **giờ Việt Nam (UTC+7)**, không phụ thuộc đồng hồ máy chủ.
+- Mỗi node có **API key riêng**; node dùng key của zone khác sẽ bị từ chối — giúp phát hiện
+  nạp nhầm firmware. `DEVICE_API_KEY` trong `.env` là key dự phòng dành cho `simulate.js`.
+- Cảm biến độ ẩm đất **phải hiệu chỉnh** `SOIL_RAW_DRY` / `SOIL_RAW_WET` theo thực tế,
+  nếu không ngưỡng 30% trên web sẽ không tương ứng với độ ẩm thật.
 - Tài khoản `admin/admin123` chỉ để dev — đổi ngay khi dùng thật (`npm run seed <user> <pass>`).
