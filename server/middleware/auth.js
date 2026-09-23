@@ -1,5 +1,5 @@
 // Middleware xác thực.
-const config = require('../config');
+const deviceService = require('../services/deviceService');
 
 /**
  * Chặn truy cập trang/web API nếu chưa đăng nhập (session).
@@ -21,14 +21,22 @@ function requireLogin(req, res, next) {
 }
 
 /**
- * Xác thực thiết bị (ESP32 / ESP32-Cam / AI-service) bằng header x-api-key.
+ * Xác thực thiết bị bằng header x-api-key.
+ * Mỗi node có key riêng (cột Devices.ApiKey) → tra ra được request đến từ node nào,
+ * gắn vào req.device để route kiểm tra node có gửi đúng zone của nó không.
  */
-function requireApiKey(req, res, next) {
-  const key = req.get('x-api-key');
-  if (key && key === config.deviceApiKey) {
+async function requireApiKey(req, res, next) {
+  try {
+    const device = await deviceService.findByApiKey(req.get('x-api-key'));
+    if (!device) {
+      return res.status(401).json({ error: 'Invalid API key' });
+    }
+    req.device = device;
     return next();
+  } catch (err) {
+    console.error('[auth] lỗi tra API key:', err.message);
+    return res.status(500).json({ error: 'Server error' });
   }
-  return res.status(401).json({ error: 'Invalid API key' });
 }
 
 module.exports = { requireLogin, requireApiKey };

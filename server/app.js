@@ -1,4 +1,4 @@
-// Điểm khởi động: Express + Socket.IO + session + định tuyến.
+// Điểm khởi động: Express + Socket.IO + session + định tuyến + các vòng lặp nền.
 const path = require('path');
 const http = require('http');
 const express = require('express');
@@ -9,13 +9,18 @@ const config = require('./config');
 const realtime = require('./realtime');
 const { requireLogin } = require('./middleware/auth');
 
+const pumpService = require('./services/pumpService');
+const deviceService = require('./services/deviceService');
+const irrigationService = require('./services/irrigationService');
+const schedulerService = require('./services/schedulerService');
+
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 realtime.setIo(io);
 
 // ----- Middleware chung -----
-app.use(express.json({ limit: '10mb' })); // 10mb cho ảnh base64 nếu cần
+app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true }));
 
 const sessionMiddleware = session({
@@ -35,10 +40,11 @@ const PUBLIC_DIR = path.join(__dirname, 'public');
 // ----- Routes API & auth -----
 app.use('/', require('./routes/auth'));
 app.use('/api/telemetry', require('./routes/telemetry'));
-app.use('/api', require('./routes/commands')); // /api/commands, /api/control
-app.use('/api/camera', require('./routes/camera'));
+app.use('/api', require('./routes/commands')); // /api/commands, /api/control, /api/devices
 app.use('/api/export', require('./routes/export'));
 app.use('/api/rules', require('./routes/rules'));
+app.use('/api/schedules', require('./routes/schedules'));
+app.use('/api/stats', require('./routes/stats'));
 app.use('/api/logs', require('./routes/logs'));
 
 // ----- Phục vụ trang tĩnh (có bảo vệ) -----
@@ -48,20 +54,17 @@ app.get('/login', (req, res) => {
   res.sendFile(path.join(PUBLIC_DIR, 'login.html'));
 });
 
-// Tài nguyên tĩnh không nhạy cảm (css/js/ảnh) cho phép truy cập tự do.
+// Tài nguyên tĩnh không nhạy cảm (css/js) cho phép truy cập tự do.
 app.use('/css', express.static(path.join(PUBLIC_DIR, 'css')));
 app.use('/js', express.static(path.join(PUBLIC_DIR, 'js')));
 app.use('/assets', express.static(path.join(PUBLIC_DIR, 'assets')));
-
-// Ảnh chụp từ camera: chỉ cho client đã đăng nhập xem.
-app.use('/captures', requireLogin, express.static(path.join(PUBLIC_DIR, 'captures')));
 
 // Các trang HTML dashboard: bảo vệ bằng requireLogin.
 const PAGES = {
   '/': 'index.html',
   '/sensors': 'sensors.html',
   '/control': 'control.html',
-  '/camera': 'camera.html',
+  '/schedules': 'schedules.html',
   '/logs': 'logs.html',
   '/configuration': 'configuration.html',
 };
@@ -94,9 +97,31 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Server error' });
 });
 
-server.listen(config.port, config.host, () => {
-  console.log(`[server] AquaControl Pro chạy tại http://${config.host}:${config.port}`);
-  console.log(`[server] Public URL: ${config.publicUrl}`);
+/**
+ * Nạp dữ liệu vào cache rồi mới mở cổng — tránh trường hợp node ESP32 poll trúng
+ * lúc server vừa lên và nhận về map lệnh rỗng (bơm sẽ bị tắt oan).
+ */
+async function start() {
+  const pumps = await pumpService.load();
+  await deviceService.loadKeys();
+  console.log(`[init] Đã nạp trạng thái ${pumps} bơm và danh sách API key thiết bị`);
+
+  // Các vòng lặp nền
+  irrigationService.startLoop();  // cắt bơm hết giờ / quá giờ
+  schedulerService.startLoop();   // dò lịch tưới
+  deviceService.startMonitor();   // phát hiện node offline
+
+  server.listen(config.port, config.host, () => {
+    console.log(`[server] AquaControl Pro chạy tại http://${config.host}:${config.port}`);
+    console.log(`[server] Public URL: ${config.publicUrl}`);
+    console.log(`[server] ${config.zoneCount} zone | lịch tưới theo giờ VN (UTC+7)`);
+  });
+}
+
+start().catch((err) => {
+  console.error('[server] Không khởi động được:', err.message);
+  console.error('        Kiểm tra kết nối SQL Server trong .env và đã chạy db/schema.sql chưa.');
+  process.exit(1);
 });
 
 module.exports = { app, server, io };
