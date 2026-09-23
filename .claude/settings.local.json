@@ -13,7 +13,9 @@
       "Bash(curl -s -o /dev/null -w \"theme.js: HTTP %{http_code}\\\\n\" http://127.0.0.1:3000/js/theme.js)",
       "Bash(curl -s -o /dev/null -w \"app.css: HTTP %{http_code}\\\\n\" http://127.0.0.1:3000/css/app.css)",
       "Bash(curl -s -w \"api latest\\(chua login\\): \" http://127.0.0.1:3000/api/telemetry/latest)",
-      "Bash(curl -s -o /dev/null -w \"socket.io client: HTTP %{http_code}\\\\n\" http://127.0.0.1:3000/socket.io/socket.io.js)"
+      "Bash(curl -s -o /dev/null -w \"socket.io client: HTTP %{http_code}\\\\n\" http://127.0.0.1:3000/socket.io/socket.io.js)",
+      "Bash(git add *)",
+      "Bash(git commit *)"
     ]
   }
 }

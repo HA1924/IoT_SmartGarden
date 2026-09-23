@@ -59,6 +59,13 @@ body {
   opacity: 0.5;
   cursor: not-allowed;
 }
+/* Tường minh cho trạng thái checked + disabled (auto mode đang ON) */
+.switch input:checked:disabled + .switch-slider {
+  background: #006e2f;
+}
+.switch input:checked:disabled + .switch-slider:before {
+  transform: translateX(24px);
+}
 
 /* Hiệu ứng cập nhật giá trị realtime */
 @keyframes value-flash {

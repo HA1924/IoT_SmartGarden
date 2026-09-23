@@ -1,9 +1,15 @@
 // Logic tự động: dựa trên AutomationRules + dữ liệu cảm biến mới nhất,
 // bật/tắt 3 bơm (theo độ ẩm đất từng zone) và 1 đèn LED (theo ánh sáng trung bình).
 // Chỉ tác động lên cơ cấu đang ở Mode = 'auto'. Cơ cấu 'manual' do admin tự điều khiển.
+// Dùng hysteresis để tránh pump/LED nhấp nháy khi sensor dao động quanh ngưỡng.
 const { query } = require('../db');
 const actuatorService = require('./actuatorService');
 const logService = require('./logService');
+
+// Biên hysteresis: cơ cấu đang BẬT sẽ chỉ TẮT khi vượt ngưỡng thêm khoảng này.
+// Ví dụ SoilThreshold=30%: bật khi soil<30%, tắt khi soil>=45% (30+15).
+const HYSTERESIS_SOIL  = 15; // %
+const HYSTERESIS_LIGHT = 50; // lux
 
 async function getRules() {
   const result = await query(
@@ -32,7 +38,12 @@ async function evaluate(zones) {
     if (!current || current.mode !== 'auto') continue;
     if (z.soilMoisture == null) continue;
 
-    const shouldOn = z.soilMoisture < rule.SoilThreshold;
+    // Hysteresis: bật khi soil < threshold, tắt khi soil >= threshold + margin
+    // → tránh cycling khi sensor dao động quanh ngưỡng
+    const shouldOn = current.state
+      ? z.soilMoisture < (rule.SoilThreshold + HYSTERESIS_SOIL)
+      : z.soilMoisture < rule.SoilThreshold;
+
     if (shouldOn !== current.state) {
       await actuatorService.setState(pump, { state: shouldOn, updatedBy: 'auto' });
       changes.push({ actuator: pump, state: shouldOn });
@@ -52,7 +63,12 @@ async function evaluate(zones) {
     if (lit.length) {
       const avgLight = lit.reduce((s, x) => s + x.light, 0) / lit.length;
       const avgThr = lit.reduce((s, x) => s + x.thr, 0) / lit.length;
-      const shouldOn = avgLight < avgThr;
+
+      // Hysteresis: bật khi avgLight < avgThr, tắt khi avgLight >= avgThr + margin
+      const shouldOn = led.state
+        ? avgLight < (avgThr + HYSTERESIS_LIGHT)
+        : avgLight < avgThr;
+
       if (shouldOn !== led.state) {
         await actuatorService.setState('led', { state: shouldOn, updatedBy: 'auto' });
         changes.push({ actuator: 'led', state: shouldOn });
