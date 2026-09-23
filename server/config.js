@@ -3,9 +3,9 @@ require('dotenv').config();
 
 const config = {
   host: process.env.HOST || '127.0.0.1',
-  port: parseInt(process.env.PORT, 10) || 3000,
+  port: parseInt(process.env.PORT, 10) || 5000,
   nodeEnv: process.env.NODE_ENV || 'development',
-  publicUrl: process.env.PUBLIC_URL || 'http://localhost:3000',
+  publicUrl: process.env.PUBLIC_URL || 'http://localhost:5000',
 
   sessionSecret: process.env.SESSION_SECRET || 'change-me',
   cookieSecure: process.env.COOKIE_SECURE === 'true',

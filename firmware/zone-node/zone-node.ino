@@ -31,7 +31,7 @@
 
 #define WIFI_SSID    "TEN_WIFI"
 #define WIFI_PASS    "MAT_KHAU_WIFI"
-#define SERVER_BASE  "http://192.168.1.50:3000"         // ← IP máy chủ (hoặc domain)
+#define SERVER_BASE  "http://192.168.1.50:5000"         // ← IP máy chủ (hoặc domain)
 
 #define FW_VERSION   "2.0.0"
 

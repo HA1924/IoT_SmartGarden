@@ -61,7 +61,7 @@ Mở `firmware/zone-node/zone-node.ino`, sửa phần đầu file:
 
 #define WIFI_SSID    "TEN_WIFI"
 #define WIFI_PASS    "MAT_KHAU_WIFI"
-#define SERVER_BASE  "http://192.168.1.50:3000"     // ← IP máy chủ
+#define SERVER_BASE  "http://192.168.1.50:5000"     // ← IP máy chủ
 ```
 
 **API key lấy ở đâu**: mỗi node có key riêng, nằm ở cột `ApiKey` bảng `Devices`.
@@ -95,7 +95,7 @@ Node chạy đúng sẽ in:
 ```
 
 Gặp `LOI HTTP 401` → sai `API_KEY`.
-Gặp `LOI HTTP -1` → sai IP/cổng, hoặc firewall máy chủ chưa mở cổng 3000, hoặc đang gọi HTTPS.
+Gặp `LOI HTTP -1` → sai IP/cổng, hoặc firewall máy chủ chưa mở cổng 5000, hoặc đang gọi HTTPS.
 
 ---
 

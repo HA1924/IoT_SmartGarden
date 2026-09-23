@@ -88,7 +88,7 @@ npm run dev
 ```
 [db] Đã kết nối SQL Server: ... / AquaControl
 [init] Đã nạp trạng thái 10 bơm và danh sách API key thiết bị
-[server] AquaControl Pro chạy tại http://127.0.0.1:3000
+[server] AquaControl Pro chạy tại http://127.0.0.1:5000
 ```
 
 Mở terminal thứ hai, đổ dữ liệu giả vào:
@@ -96,7 +96,7 @@ Mở terminal thứ hai, đổ dữ liệu giả vào:
 npm run simulate -- --fast
 ```
 
-Vào http://localhost:3000, đăng nhập `admin` / `admin123` → trang Overview phải hiện
+Vào http://localhost:5000, đăng nhập `admin` / `admin123` → trang Overview phải hiện
 đủ 10 zone và số liệu tự nhảy sau vài giây.
 
 ---

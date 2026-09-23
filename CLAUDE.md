@@ -125,7 +125,7 @@ cp .env.example .env        # sửa DB_USER, DB_PASSWORD, DB_SERVER cho khớp S
 npm install
 npm run seed                # tạo admin / admin123
 # 3. Chạy:
-npm run dev                 # nodemon, http://localhost:3000
+npm run dev                 # nodemon, http://localhost:5000
 npm run simulate            # (terminal 2) giả lập 10 node
 npm run simulate -- --fast          # chu kỳ 3s thay vì 30s, xem kết quả nhanh
 npm run simulate -- --dry 3         # ép zone 3 khô dần để test tưới tự động + cắt an toàn
@@ -133,7 +133,7 @@ npm run simulate -- --dry 3         # ép zone 3 khô dần để test tưới t
 Đăng nhập: `admin` / `admin123` (đổi bằng `npm run seed <user> <pass>`).
 
 ## Biến môi trường (.env) quan trọng
-- `HOST` (dev `127.0.0.1`; để ESP32/LAN truy cập → đổi `0.0.0.0`), `PORT` (3000), `PUBLIC_URL`.
+- `HOST` (dev `127.0.0.1`; để ESP32/LAN truy cập → đổi `0.0.0.0`), `PORT` (5000), `PUBLIC_URL`.
 - `SESSION_SECRET`, `COOKIE_SECURE` (true khi có HTTPS).
 - `DEVICE_API_KEY` — **key dự phòng**, chấp nhận cho mọi zone, dùng cho `simulate.js` và test.
   Thiết bị thật dùng key riêng ở cột `Devices.ApiKey`.

@@ -53,10 +53,10 @@ $tcp = Test-NetConnection -ComputerName localhost -Port 1433 -InformationLevel Q
 if ($tcp) { Write-Host "OK     SQL Server dang nghe cong 1433" -ForegroundColor Green }
 else { Write-Host "CHUA   Cong 1433 chua mo - xem PHAN 2 buoc 3" -ForegroundColor Yellow }
 
-# 7. Cong 3000 con trong khong
-$busy = Get-NetTCPConnection -LocalPort 3000 -State Listen -ErrorAction SilentlyContinue
-if ($busy) { Write-Host "BAN    Cong 3000 dang bi PID $($busy[0].OwningProcess) chiem" -ForegroundColor Yellow }
-else { Write-Host "OK     Cong 3000 con trong" -ForegroundColor Green }
+# 7. Cong 5000 con trong khong
+$busy = Get-NetTCPConnection -LocalPort 5000 -State Listen -ErrorAction SilentlyContinue
+if ($busy) { Write-Host "BAN    Cong 5000 dang bi PID $($busy[0].OwningProcess) chiem" -ForegroundColor Yellow }
+else { Write-Host "OK     Cong 5000 con trong" -ForegroundColor Green }
 
 Write-Host "`n==============================================`n"
 ```
@@ -70,7 +70,7 @@ Write-Host "`n==============================================`n"
 | `THIEU Git` | Bỏ qua được nếu copy code bằng USB |
 | `THIEU SQL Server` / `SSMS` | Làm Phần 1 bước 2 và 3 |
 | `CHUA cong 1433` | SQL đã cài nhưng chưa bật TCP/IP → Phần 2 bước 3 |
-| `BAN cong 3000` | Có ứng dụng khác chiếm cổng → đổi `PORT` trong `.env`, hoặc tắt tiến trình đó |
+| `BAN cong 5000` | Có ứng dụng khác chiếm cổng → đổi `PORT` trong `.env`, hoặc tắt tiến trình đó |
 
 ---
 
@@ -176,7 +176,7 @@ NODE_ENV=production
 SESSION_SECRET=<chuỗi ngẫu nhiên dài, không để nguyên mẫu>
 DEVICE_API_KEY=<chuỗi ngẫu nhiên khác>
 HOST=0.0.0.0                       # để máy khác và ESP32 truy cập được
-PUBLIC_URL=http://192.168.1.50:3000
+PUBLIC_URL=http://192.168.1.50:5000
 ```
 
 Sinh nhanh chuỗi ngẫu nhiên:
@@ -222,7 +222,7 @@ npm run dev
 ```
 [db] Đã kết nối SQL Server: localhost / AquaControl
 [init] Đã nạp trạng thái 10 bơm và danh sách API key thiết bị
-[server] AquaControl Pro chạy tại http://0.0.0.0:3000
+[server] AquaControl Pro chạy tại http://0.0.0.0:5000
 ```
 
 ### 6.3 Đổ dữ liệu giả để kiểm tra toàn tuyến
@@ -232,7 +232,7 @@ cd C:\aquacontrol
 npm run simulate -- --fast
 ```
 
-Mở http://localhost:3000 → đăng nhập `admin` / `admin123`:
+Mở http://localhost:5000 → đăng nhập `admin` / `admin123`:
 
 | Kiểm tra | Đạt khi |
 |---|---|
@@ -256,8 +256,8 @@ với log mức `error` ghi `exceeded max runtime`. Đây là lớp bảo vệ c
 # Lay IP noi bo cua may nay
 ipconfig     # ghi lai dong IPv4 Address, vi du 192.168.1.50
 
-# Mo cong 3000 tren Windows Firewall (can PowerShell quyen Admin)
-netsh advfirewall firewall add rule name="AquaControl 3000" dir=in action=allow protocol=TCP localport=3000
+# Mo cong 5000 tren Windows Firewall (can PowerShell quyen Admin)
+netsh advfirewall firewall add rule name="AquaControl 5000" dir=in action=allow protocol=TCP localport=5000
 
 # Mang dang o che do Public thi firewall chan gan het - doi sang Private
 Get-NetConnectionProfile
@@ -267,7 +267,7 @@ Set-NetConnectionProfile -InterfaceAlias "Ethernet" -NetworkCategory Private
 **Đặt IP cố định**: vào trang quản trị router → **DHCP Reservation** → gán cứng IP theo địa chỉ MAC
 của máy này. Bắt buộc, vì IP đổi là 10 node ESP32 mất kết nối hết.
 
-**Kiểm tra**: lấy điện thoại **tắt 4G**, cùng WiFi, mở `http://192.168.1.50:3000` — phải thấy trang đăng nhập.
+**Kiểm tra**: lấy điện thoại **tắt 4G**, cùng WiFi, mở `http://192.168.1.50:5000` — phải thấy trang đăng nhập.
 
 Không vào được thì theo thứ tự: firewall (lệnh trên), network profile (Private), rồi `HOST=0.0.0.0` trong `.env`.
 
@@ -307,7 +307,7 @@ Xem `firmware/HUONG_DAN.md`. Tóm tắt: cả 10 con nạp chung file
 ```cpp
 #define ZONE_ID      1                        // 1..10
 #define API_KEY      "aqcp-z01-..."           // key rieng lay tu bang Devices
-#define SERVER_BASE  "http://192.168.1.50:3000"   // IP may chu o Phan 7
+#define SERVER_BASE  "http://192.168.1.50:5000"   // IP may chu o Phan 7
 ```
 
 ---
@@ -338,7 +338,7 @@ sẽ có file migration riêng trong thư mục `db/` — đọc ghi chú của 
 - [ ] Đăng nhập được, trang Overview hiện đủ **10 zone**
 - [ ] `npm run simulate -- --fast` → số liệu tự nhảy trên web
 - [ ] Bấm *Water 60s* → bơm bật, đếm ngược, tự tắt
-- [ ] Máy khác trong LAN mở được `http://<IP>:3000`
+- [ ] Máy khác trong LAN mở được `http://<IP>:5000`
 - [ ] Khởi động lại máy, **không đăng nhập Windows**, web vẫn vào được
 
 ---
@@ -350,7 +350,7 @@ sẽ có file migration riêng trong thư mục `db/` — đọc ghi chú của 
 | `Login failed for user 'aquacontrol'` | Chưa bật SQL Server Authentication, hoặc sai mật khẩu | Phần 2 bước 1 và 2 |
 | `Failed to connect to localhost:1433` | TCP/IP chưa bật hoặc chưa restart service | Phần 2 bước 3 |
 | `Invalid object name 'dbo.PumpState'` | Chưa chạy `schema.sql`, hoặc sai `DB_DATABASE` | Phần 5 |
-| `EADDRINUSE :::3000` | Cổng 3000 đã bị chiếm | Đổi `PORT` trong `.env`, hoặc tắt tiến trình chiếm cổng |
+| `EADDRINUSE :::5000` | Cổng 5000 đã bị chiếm | Đổi `PORT` trong `.env`, hoặc tắt tiến trình chiếm cổng |
 | `fetch is not defined` khi `npm run simulate` | Node.js cũ hơn 18 | Cài lại Node 20 LTS |
 | Máy khác không vào được web | Firewall / network Public / `HOST` sai | Phần 7 |
 | Đăng nhập xong bị đá ra ngay | Chạy HTTPS mà `COOKIE_SECURE=false`, hoặc ngược lại | Sửa `COOKIE_SECURE` trong `.env` |

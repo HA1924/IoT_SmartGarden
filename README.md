@@ -65,7 +65,7 @@ npm install
 npm run seed               # tạo admin mặc định: admin / admin123
 npm run dev                # chạy với nodemon (hoặc: npm start)
 ```
-Mở http://localhost:3000 → đăng nhập `admin` / `admin123`.
+Mở http://localhost:5000 → đăng nhập `admin` / `admin123`.
 
 ### 3) Giả lập 10 node (test khi chưa có phần cứng)
 ```bash
@@ -105,7 +105,7 @@ Chỉ cần sửa `.env` và firmware, **không sửa code**:
 - `.env`: `HOST=0.0.0.0`, `PUBLIC_URL=http://<ip-hoặc-domain>`, đổi `SESSION_SECRET`,
   bật `COOKIE_SECURE=true` khi đã có HTTPS.
 - Firmware: đổi `SERVER_BASE` sang IP/domain máy chủ.
-- Mạng: mở cổng 3000, hoặc đặt reverse proxy + HTTPS phía trước.
+- Mạng: mở cổng 5000, hoặc đặt reverse proxy + HTTPS phía trước.
 
 ## Ghi chú
 - Dữ liệu cảm biến được **giữ vĩnh viễn** (không có job xoá). Biểu đồ luôn gom nhóm bằng SQL
