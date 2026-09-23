@@ -15,7 +15,8 @@
       "Bash(curl -s -w \"api latest\\(chua login\\): \" http://127.0.0.1:3000/api/telemetry/latest)",
       "Bash(curl -s -o /dev/null -w \"socket.io client: HTTP %{http_code}\\\\n\" http://127.0.0.1:3000/socket.io/socket.io.js)",
       "Bash(git add *)",
-      "Bash(git commit *)"
+      "Bash(git commit *)",
+      "PowerShell($conn = Get-NetTCPConnection -LocalPort 3100 -State Listen -ErrorAction SilentlyContinue; if \\($conn\\) { $conn | ForEach-Object { Stop-Process -Id $_.OwningProcess -Force; \"Da dung PID $\\($_.OwningProcess\\)\" } } else { \"Khong co tien trinh nao nghe cong 3100\" })"
     ]
   }
 }

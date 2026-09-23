@@ -7,7 +7,8 @@
     "start": "node server/app.js",
     "dev": "nodemon server/app.js",
     "seed": "node server/scripts/seedAdmin.js",
-    "simulate": "node server/scripts/simulate.js"
+    "simulate": "node server/scripts/simulate.js",
+    "preview": "node server/scripts/preview.js"
   },
   "keywords": [
     "esp32",
