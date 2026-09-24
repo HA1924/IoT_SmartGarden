@@ -80,14 +80,24 @@ Write-Host "`n==============================================`n"
 Tải tại https://nodejs.org → **Windows Installer (.msi)** → cài mặc định.
 Đóng PowerShell rồi mở lại, kiểm tra: `node -v` phải ra `v20.x.x`.
 
-### 2. SQL Server 2022 Express (miễn phí)
-Tải tại https://www.microsoft.com/sql-server/sql-server-downloads → mục **Express** → chọn kiểu cài **Basic**.
+### 2. SQL Server Express (miễn phí)
+Tải tại https://www.microsoft.com/sql-server/sql-server-downloads → mục **Express** → kiểu cài **Basic**.
+
+**Bản 2019, 2022 hay 2025 đều dùng được** — dự án chỉ dùng T-SQL tiêu chuẩn. Trang tải thường
+chỉ để bản mới nhất, cứ lấy bản đó.
+
 Cài xong màn hình cuối có ghi **Connection String** và tên instance, thường là `SQLEXPRESS` — ghi lại.
+
+> **Riêng bản 2022 trở lên**: nếu lúc cài bạn bật tuỳ chọn **Force Strict Encryption** (TDS 8.0)
+> thì phải sửa `.env` thành `DB_ENCRYPT=true` và `DB_TRUST_CERT=true`, nếu không Node sẽ báo lỗi
+> kết nối dù SQL vẫn chạy. Không bật thì để nguyên `DB_ENCRYPT=false`.
 
 ### 3. SSMS (SQL Server Management Studio)
 Tải riêng tại https://aka.ms/ssmsfullsetup.
 **Bắt buộc phải có**: `db/schema.sql` dùng cú pháp `GO` batch nên chỉ chạy được bằng SSMS,
 không chạy qua Node hay công cụ khác được.
+
+SSMS phiên bản nào cũng mở được database do SQL Server 2019–2025 tạo ra, nhưng nên lấy bản mới nhất.
 
 ### 4. Git (bỏ qua nếu copy code bằng USB)
 Tải tại https://git-scm.com → cài mặc định.

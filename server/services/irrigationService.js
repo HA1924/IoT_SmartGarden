@@ -43,7 +43,7 @@ async function start(zone, { durationSec, trigger = 'manual', by = 'auto' } = {}
   const runUntil = durationSec ? new Date(Date.now() + durationSec * 1000) : null;
 
   await query(
-    `INSERT INTO dbo.WateringRuns (Zone, Trigger, TriggeredBy) VALUES (@zone, @trigger, @by)`,
+    `INSERT INTO dbo.WateringRuns (Zone, TriggerType, TriggeredBy) VALUES (@zone, @trigger, @by)`,
     { zone: z, trigger, by }
   );
 

@@ -186,7 +186,9 @@ CREATE TABLE dbo.WateringRuns (
     StartedAt   DATETIME2    NOT NULL DEFAULT SYSUTCDATETIME(),
     EndedAt     DATETIME2    NULL,             -- NULL = đang chạy
     DurationSec INT          NULL,             -- điền khi kết thúc
-    Trigger     NVARCHAR(10) NOT NULL,         -- 'manual'|'schedule'|'threshold'
+    -- KHONG dat ten cot la 'Trigger': day la tu khoa danh rieng cua SQL Server,
+    -- se gay loi "Incorrect syntax near the keyword 'Trigger'".
+    TriggerType NVARCHAR(10) NOT NULL,         -- 'manual'|'schedule'|'threshold'
     TriggeredBy NVARCHAR(50) NULL,             -- username, hoặc 'auto'
     StopReason  NVARCHAR(20) NULL
 );

@@ -33,10 +33,10 @@ router.get('/watering', requireLogin, async (req, res) => {
     );
 
     const byTrigger = await query(
-      `SELECT Trigger, COUNT(*) AS Runs, SUM(COALESCE(DurationSec, 0)) AS TotalSec
+      `SELECT TriggerType, COUNT(*) AS Runs, SUM(COALESCE(DurationSec, 0)) AS TotalSec
          FROM dbo.WateringRuns
         WHERE StartedAt >= DATEADD(DAY, -@days, SYSUTCDATETIME())
-        GROUP BY Trigger`,
+        GROUP BY TriggerType`,
       { days }
     );
 
@@ -63,7 +63,7 @@ router.get('/runs', requireLogin, async (req, res) => {
       params.zone = zone;
     }
     const result = await query(
-      `SELECT TOP (@limit) Id, Zone, StartedAt, EndedAt, DurationSec, Trigger, TriggeredBy, StopReason
+      `SELECT TOP (@limit) Id, Zone, StartedAt, EndedAt, DurationSec, TriggerType, TriggeredBy, StopReason
          FROM dbo.WateringRuns ${where} ORDER BY StartedAt DESC`,
       params
     );

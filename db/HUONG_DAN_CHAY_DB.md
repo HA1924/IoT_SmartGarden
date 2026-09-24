@@ -111,6 +111,7 @@ Vào http://localhost:5000, đăng nhập `admin` / `admin123` → trang Overvie
 | `Login failed for user` khi `npm run dev` | Sai `DB_USER`/`DB_PASSWORD`, hoặc chưa bật SQL Server Authentication | SSMS → chuột phải server → Properties → Security → chọn *SQL Server and Windows Authentication mode* → restart service |
 | `Failed to connect to localhost:1433` | TCP/IP chưa bật hoặc chưa restart service | Xem `DEPLOY.md` Phần 2 bước 3 |
 | Bảng tạo xong nhưng `PumpState` rỗng | Phần seed cuối file chưa chạy hết | Bôi đen riêng phần `INSERT` cuối file rồi bấm F5 |
+| `Incorrect syntax near the keyword '...'` | Tên cột trùng từ khoá dành riêng của SQL Server (`Trigger`, `Key`, `User`, `File`...) | Đổi tên cột, hoặc bọc trong ngoặc vuông `[Trigger]`. Lỗi này kéo theo dòng `Cannot find the object` ngay sau đó vì bảng không tạo được |
 
 ---
 
